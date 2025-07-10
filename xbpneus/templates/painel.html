@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Painel do Cliente - XBPNEUS Premium</title>
+</head>
+<body>
+    <h2>Bem-vindo, {{ user.get_username }}</h2>
+    <p>Você está logado!</p>
+    <a href="{% url 'logout' %}">Sair</a>
+</body>
+</html>
+
