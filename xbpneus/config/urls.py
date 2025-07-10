@@ -7,6 +7,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from xbpneus.views import painel_cliente
+from xbpneus.views_redirect import (
+    transportador_redirect, 
+    area_cliente_redirect, 
+    health_check,
+    root_redirect
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -14,10 +20,20 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     path('painel/', painel_cliente, name='painel_cliente'),
     path('frota/', include('xbpneus.apps.frota.urls')),
-    path('', include('xbpneus.apps.home.urls')),
+    
+    # Rotas de redirecionamento para integração com site principal
+    path('transportador/', transportador_redirect, name='transportador_redirect'),
+    path('area-cliente/', area_cliente_redirect, name='area_cliente_redirect'),
+    path('area-do-cliente/', area_cliente_redirect, name='area_do_cliente_redirect'),
+    path('health/', health_check, name='health_check'),
+    
+    # Apps do sistema
     path('produtos/', include('xbpneus.apps.produtos.urls')),
     path('servicos/', include('xbpneus.apps.servicos.urls')),
     path('contato/', include('xbpneus.apps.contato.urls')),
+    
+    # Página inicial - deve ser a última
+    path('', root_redirect, name='root_redirect'),
 ]
 
 # Serve media files in development

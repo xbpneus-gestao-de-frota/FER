@@ -122,9 +122,12 @@ LOGOUT_REDIRECT_URL = '/'
 
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
-    'https://8000-i0i0iiifkw45t3ueqdifg-3c1b4d25.manusvm.computer',
     'https://fer-production.up.railway.app',
     'https://courteous-gentleness-fer.up.railway.app',
+    'https://app.xbpneus.com',
+    'https://xbpneus.com',
+    'https://www.xbpneus.com',
+    'https://8000-i0i0iiifkw45t3ueqdifg-3c1b4d25.manusvm.computer',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]
