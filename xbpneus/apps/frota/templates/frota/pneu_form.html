@@ -1,0 +1,302 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}{% if pneu %}Editar Pneu{% else %}Novo Pneu{% endif %} | XBPNEUS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    .form-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .form-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .form-section h6 {
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        padding: 12px 16px;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-weight: 600;
+    }
+    .btn-secondary {
+        border-radius: 8px;
+        padding: 12px 24px;
+    }
+    .tire-preview {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+    }
+    .tire-visual {
+        width: 120px;
+        height: 120px;
+        border: 4px solid #667eea;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+    .info-badge {
+        background: #667eea;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin: 2px;
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Form Header -->
+    <div class="form-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2><i class="bi bi-circle-fill"></i> {% if pneu %}Editar Pneu{% else %}Novo Pneu{% endif %}</h2>
+                <p class="mb-0">Cadastre ou edite as informações do pneu</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'frota:dashboard' %}" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <!-- Form Fields -->
+            <div class="col-md-8">
+                <div class="card form-card">
+                    <div class="card-body">
+                        <!-- Basic Information -->
+                        <div class="form-section">
+                            <h6><i class="bi bi-info-circle"></i> Informações Básicas</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_veiculo" class="form-label">Veículo</label>
+                                    <select name="veiculo" id="id_veiculo" class="form-select" required>
+                                        <option value="">Selecione o veículo</option>
+                                        {% for veiculo in veiculos %}
+                                            <option value="{{ veiculo.id }}" {% if pneu.veiculo.id == veiculo.id %}selected{% endif %}>
+                                                {{ veiculo.placa }} - {{ veiculo.modelo }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_posicao" class="form-label">Posição</label>
+                                    <select name="posicao" id="id_posicao" class="form-select" required>
+                                        <option value="">Selecione a posição</option>
+                                        <option value="DE" {% if pneu.posicao == 'DE' %}selected{% endif %}>Dianteiro Esquerdo</option>
+                                        <option value="DD" {% if pneu.posicao == 'DD' %}selected{% endif %}>Dianteiro Direito</option>
+                                        <option value="IE1" {% if pneu.posicao == 'IE1' %}selected{% endif %}>Intermediário Esquerdo 1</option>
+                                        <option value="IE2" {% if pneu.posicao == 'IE2' %}selected{% endif %}>Intermediário Esquerdo 2</option>
+                                        <option value="ID1" {% if pneu.posicao == 'ID1' %}selected{% endif %}>Intermediário Direito 1</option>
+                                        <option value="ID2" {% if pneu.posicao == 'ID2' %}selected{% endif %}>Intermediário Direito 2</option>
+                                        <option value="TE1" {% if pneu.posicao == 'TE1' %}selected{% endif %}>Traseiro Esquerdo 1</option>
+                                        <option value="TE2" {% if pneu.posicao == 'TE2' %}selected{% endif %}>Traseiro Esquerdo 2</option>
+                                        <option value="TD1" {% if pneu.posicao == 'TD1' %}selected{% endif %}>Traseiro Direito 1</option>
+                                        <option value="TD2" {% if pneu.posicao == 'TD2' %}selected{% endif %}>Traseiro Direito 2</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tire Specifications -->
+                        <div class="form-section">
+                            <h6><i class="bi bi-rulers"></i> Especificações do Pneu</h6>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="id_medida" class="form-label">Medida</label>
+                                    <select name="medida" id="id_medida" class="form-select" required>
+                                        <option value="">Selecione a medida</option>
+                                        <option value="225/75/16" {% if pneu.medida == '225/75/16' %}selected{% endif %}>225/75/16</option>
+                                        <option value="215/75/17.5" {% if pneu.medida == '215/75/17.5' %}selected{% endif %}>215/75/17.5</option>
+                                        <option value="235/75/17.5" {% if pneu.medida == '235/75/17.5' %}selected{% endif %}>235/75/17.5</option>
+                                        <option value="275/80/22.5" {% if pneu.medida == '275/80/22.5' %}selected{% endif %}>275/80/22.5</option>
+                                        <option value="295/80/22.5" {% if pneu.medida == '295/80/22.5' %}selected{% endif %}>295/80/22.5</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="id_marca" class="form-label">Marca</label>
+                                    <input type="text" name="marca" id="id_marca" class="form-control" 
+                                           value="{{ pneu.marca|default:'' }}" placeholder="Ex: Michelin, Bridgestone">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="id_modelo" class="form-label">Modelo</label>
+                                    <input type="text" name="modelo" id="id_modelo" class="form-control" 
+                                           value="{{ pneu.modelo|default:'' }}" placeholder="Ex: XZA3, R249">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_dot" class="form-label">DOT (Data de Fabricação)</label>
+                                    <input type="text" name="dot" id="id_dot" class="form-control" 
+                                           value="{{ pneu.dot|default:'' }}" placeholder="Ex: 2023" maxlength="4">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_numero_fogo" class="form-label">Número de Fogo</label>
+                                    <input type="text" name="numero_fogo" id="id_numero_fogo" class="form-control" 
+                                           value="{{ pneu.numero_fogo|default:'' }}" placeholder="Número de identificação">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Condition and Status -->
+                        <div class="form-section">
+                            <h6><i class="bi bi-speedometer"></i> Estado e Condição</h6>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="id_sulco_externo" class="form-label">Sulco Externo (mm)</label>
+                                    <input type="number" name="sulco_externo" id="id_sulco_externo" class="form-control" 
+                                           value="{{ pneu.sulco_externo|default:'' }}" step="0.1" min="0" max="20">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="id_sulco_central" class="form-label">Sulco Central (mm)</label>
+                                    <input type="number" name="sulco_central" id="id_sulco_central" class="form-control" 
+                                           value="{{ pneu.sulco_central|default:'' }}" step="0.1" min="0" max="20">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="id_sulco_interno" class="form-label">Sulco Interno (mm)</label>
+                                    <input type="number" name="sulco_interno" id="id_sulco_interno" class="form-control" 
+                                           value="{{ pneu.sulco_interno|default:'' }}" step="0.1" min="0" max="20">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_pressao" class="form-label">Pressão (PSI)</label>
+                                    <input type="number" name="pressao" id="id_pressao" class="form-control" 
+                                           value="{{ pneu.pressao|default:'' }}" step="0.1" min="0" max="200">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_km_rodado" class="form-label">KM Rodado</label>
+                                    <input type="number" name="km_rodado" id="id_km_rodado" class="form-control" 
+                                           value="{{ pneu.km_rodado|default:'' }}" min="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Information -->
+                        <div class="form-section">
+                            <h6><i class="bi bi-chat-text"></i> Informações Adicionais</h6>
+                            <div class="mb-3">
+                                <label for="id_observacoes" class="form-label">Observações</label>
+                                <textarea name="observacoes" id="id_observacoes" class="form-control" rows="3" 
+                                          placeholder="Observações sobre o estado do pneu, reparos, etc.">{{ pneu.observacoes|default:'' }}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> {% if pneu %}Atualizar{% else %}Cadastrar{% endif %} Pneu
+                            </button>
+                            <a href="{% url 'frota:dashboard' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="col-md-4">
+                <div class="card form-card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-eye"></i> Visualização</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="tire-preview">
+                            <div class="tire-visual">
+                                <i class="bi bi-circle-fill"></i>
+                            </div>
+                            <h6 id="preview-position">Posição: -</h6>
+                            <div class="mt-3">
+                                <span class="info-badge" id="preview-measure">Medida: -</span>
+                                <span class="info-badge" id="preview-brand">Marca: -</span>
+                            </div>
+                        </div>
+
+                        <!-- Quick Tips -->
+                        <div class="mt-4">
+                            <h6 class="text-muted">Dicas Importantes:</h6>
+                            <ul class="list-unstyled small text-muted">
+                                <li><i class="bi bi-check-circle text-success"></i> Sulco mínimo: 1.6mm</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Pressão ideal: 100-120 PSI</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Verifique DOT para idade</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Anote número de fogo</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+// Update preview when form changes
+document.addEventListener('DOMContentLoaded', function() {
+    const positionSelect = document.getElementById('id_posicao');
+    const measureSelect = document.getElementById('id_medida');
+    const brandInput = document.getElementById('id_marca');
+    
+    function updatePreview() {
+        const position = positionSelect.value;
+        const measure = measureSelect.value;
+        const brand = brandInput.value;
+        
+        document.getElementById('preview-position').textContent = 
+            position ? `Posição: ${positionSelect.options[positionSelect.selectedIndex].text}` : 'Posição: -';
+        document.getElementById('preview-measure').textContent = 
+            measure ? `Medida: ${measure}` : 'Medida: -';
+        document.getElementById('preview-brand').textContent = 
+            brand ? `Marca: ${brand}` : 'Marca: -';
+    }
+    
+    positionSelect.addEventListener('change', updatePreview);
+    measureSelect.addEventListener('change', updatePreview);
+    brandInput.addEventListener('input', updatePreview);
+    
+    // Initial update
+    updatePreview();
+});
+</script>
+{% endblock %}
+

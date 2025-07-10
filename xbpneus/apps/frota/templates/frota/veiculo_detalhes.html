@@ -1,0 +1,256 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Detalhes do Veículo | XBPNEUS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .vehicle-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    .info-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    .info-value {
+        font-size: 1.1rem;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+    .tire-position {
+        width: 60px;
+        height: 60px;
+        border: 3px solid #667eea;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #667eea;
+        margin: 0 auto 10px;
+    }
+    .tire-good { border-color: #28a745; color: #28a745; }
+    .tire-warning { border-color: #ffc107; color: #ffc107; }
+    .tire-danger { border-color: #dc3545; color: #dc3545; }
+    .action-btn {
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Vehicle Header -->
+    <div class="vehicle-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2><i class="bi bi-car-front"></i> {{ veiculo.placa }}</h2>
+                <p class="mb-0">{{ veiculo.modelo }} - {{ veiculo.cor }} - {{ veiculo.ano }}</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="btn-group" role="group">
+                    <a href="{% url 'frota:veiculo_editar' veiculo.id %}" class="btn btn-light">
+                        <i class="bi bi-pencil"></i> Editar
+                    </a>
+                    <a href="{% url 'frota:veiculos_lista' %}" class="btn btn-outline-light">
+                        <i class="bi bi-arrow-left"></i> Voltar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Vehicle Information -->
+        <div class="col-md-4">
+            <div class="card info-card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informações do Veículo</h5>
+                </div>
+                <div class="card-body">
+                    <div class="info-label">Placa</div>
+                    <div class="info-value">{{ veiculo.placa }}</div>
+                    
+                    <div class="info-label">Modelo</div>
+                    <div class="info-value">{{ veiculo.modelo }}</div>
+                    
+                    <div class="info-label">Cor</div>
+                    <div class="info-value">{{ veiculo.cor }}</div>
+                    
+                    <div class="info-label">Ano</div>
+                    <div class="info-value">{{ veiculo.ano }}</div>
+                    
+                    <div class="info-label">Quilometragem</div>
+                    <div class="info-value">{{ veiculo.km|floatformat:0 }} km</div>
+                    
+                    <div class="info-label">Cadastrado em</div>
+                    <div class="info-value">{{ veiculo.data_cadastro|date:"d/m/Y H:i" }}</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card info-card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-lightning"></i> Ações Rápidas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary action-btn">
+                            <i class="bi bi-plus-circle"></i> Adicionar Pneu
+                        </button>
+                        <button class="btn btn-success action-btn">
+                            <i class="bi bi-wrench"></i> Registrar Manutenção
+                        </button>
+                        <button class="btn btn-info action-btn">
+                            <i class="bi bi-graph-up"></i> Ver Relatório
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tire Configuration -->
+        <div class="col-md-8">
+            <div class="card info-card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-circle"></i> Configuração de Pneus</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Truck Tire Layout -->
+                    <div class="row text-center">
+                        <!-- Front Tires -->
+                        <div class="col-12 mb-4">
+                            <h6 class="text-muted mb-3">Dianteiros</h6>
+                            <div class="row justify-content-center">
+                                <div class="col-2">
+                                    <div class="tire-position tire-good">DE</div>
+                                    <small>Dianteiro Esquerdo</small>
+                                </div>
+                                <div class="col-2">
+                                    <div class="tire-position tire-good">DD</div>
+                                    <small>Dianteiro Direito</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Middle Tires -->
+                        <div class="col-12 mb-4">
+                            <h6 class="text-muted mb-3">Intermediários</h6>
+                            <div class="row justify-content-center">
+                                <div class="col-2">
+                                    <div class="tire-position tire-warning">IE1</div>
+                                    <small>Int. Esq. 1</small>
+                                </div>
+                                <div class="col-2">
+                                    <div class="tire-position tire-good">IE2</div>
+                                    <small>Int. Esq. 2</small>
+                                </div>
+                                <div class="col-2">
+                                    <div class="tire-position tire-good">ID1</div>
+                                    <small>Int. Dir. 1</small>
+                                </div>
+                                <div class="col-2">
+                                    <div class="tire-position tire-danger">ID2</div>
+                                    <small>Int. Dir. 2</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rear Tires -->
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Traseiros</h6>
+                            <div class="row justify-content-center">
+                                <div class="col-2">
+                                    <div class="tire-position tire-good">TE1</div>
+                                    <small>Tras. Esq. 1</small>
+                                </div>
+                                <div class="col-2">
+                                    <div class="tire-position tire-good">TE2</div>
+                                    <small>Tras. Esq. 2</small>
+                                </div>
+                                <div class="col-2">
+                                    <div class="tire-position tire-warning">TD1</div>
+                                    <small>Tras. Dir. 1</small>
+                                </div>
+                                <div class="col-2">
+                                    <div class="tire-position tire-good">TD2</div>
+                                    <small>Tras. Dir. 2</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-center gap-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="tire-position tire-good" style="width: 20px; height: 20px; margin-right: 8px;"></div>
+                                    <small>Bom Estado</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="tire-position tire-warning" style="width: 20px; height: 20px; margin-right: 8px;"></div>
+                                    <small>Atenção</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="tire-position tire-danger" style="width: 20px; height: 20px; margin-right: 8px;"></div>
+                                    <small>Crítico</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Maintenance History -->
+            <div class="card info-card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Histórico de Manutenções</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-wrench text-primary me-2"></i>
+                                <strong>Troca de pneu dianteiro direito</strong>
+                                <br><small class="text-muted">Pneu desgastado substituído</small>
+                            </div>
+                            <small class="text-muted">15/06/2024</small>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-speedometer text-success me-2"></i>
+                                <strong>Calibragem geral</strong>
+                                <br><small class="text-muted">Todos os pneus calibrados</small>
+                            </div>
+                            <small class="text-muted">10/06/2024</small>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-arrow-repeat text-info me-2"></i>
+                                <strong>Rodízio de pneus</strong>
+                                <br><small class="text-muted">Rodízio para equalizar desgaste</small>
+                            </div>
+                            <small class="text-muted">01/06/2024</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
