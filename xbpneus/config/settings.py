@@ -123,6 +123,7 @@ LOGOUT_REDIRECT_URL = '/'
 CSRF_TRUSTED_ORIGINS = [
     'https://8000-i0i0iiifkw45t3ueqdifg-3c1b4d25.manusvm.computer',
     'https://fer-production.up.railway.app',
+    'https://courteous-gentleness-fer.up.railway.app',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]
