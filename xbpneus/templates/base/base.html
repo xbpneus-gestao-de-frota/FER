@@ -280,10 +280,10 @@
                         <a class="nav-link {% if request.resolver_match.url_name == 'painel' %}active{% endif %}" href="/painel/">
                             <i class="bi bi-speedometer2"></i> Dashboard
                         </a>
-                        <a class="nav-link {% if 'frota' in request.resolver_match.namespace %}active{% endif %}" href="{% url 'frota:dashboard' %}">
+                        <a class="nav-link" href="/frota/">
                             <i class="bi bi-truck"></i> Frota
                         </a>
-                        <a class="nav-link" href="{% url 'frota:listar_veiculos' %}">
+                        <a class="nav-link" href="/frota/veiculos/">
                             <i class="bi bi-car-front"></i> Veículos
                         </a>
                         <a class="nav-link" href="#">
