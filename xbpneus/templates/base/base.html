@@ -14,17 +14,11 @@
         :root {
             --primary-color: #667eea;
             --secondary-color: #764ba2;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --info-color: #17a2b8;
-            --light-color: #f8f9fa;
-            --dark-color: #343a40;
         }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light-color);
+            background-color: #f8f9fa;
             line-height: 1.6;
         }
         
@@ -43,8 +37,6 @@
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             min-height: calc(100vh - 56px);
             color: white;
-            position: sticky;
-            top: 56px;
         }
         
         .sidebar .nav-link {
@@ -53,88 +45,31 @@
             border-radius: 8px;
             margin: 4px 0;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
         }
         
         .sidebar .nav-link:hover,
         .sidebar .nav-link.active {
             background: rgba(255,255,255,0.2);
             color: white;
-            transform: translateX(5px);
-        }
-        
-        .sidebar .nav-link i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
         }
         
         .card {
             border: none;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
         
         .btn-primary {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             border: none;
             border-radius: 8px;
-            padding: 10px 20px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .form-control, .form-select {
-            border-radius: 8px;
-            border: 2px solid #e9ecef;
-            padding: 12px 16px;
-            transition: all 0.3s ease;
-        }
-        
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
         
         .alert {
             border: none;
             border-radius: 12px;
-            padding: 1rem 1.5rem;
-        }
-        
-        /* Mobile Responsiveness */
-        @media (max-width: 768px) {
-            .sidebar {
-                position: static;
-                min-height: auto;
-            }
-            
-            .sidebar .nav {
-                flex-direction: row;
-                overflow-x: auto;
-                padding: 1rem 0;
-            }
-            
-            .sidebar .nav-link {
-                white-space: nowrap;
-                margin: 0 4px;
-            }
         }
     </style>
-    
-    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Navigation -->
@@ -144,32 +79,21 @@
                 <i class="bi bi-truck"></i> XBPNEUS
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle"></i> {{ user.username }}
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Perfil</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Configurações</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/logout/"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="/login/">
-                                <i class="bi bi-box-arrow-in-right"></i> Entrar
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
+            <div class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/logout/"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a class="nav-link" href="/login/">
+                        <i class="bi bi-box-arrow-in-right"></i> Entrar
+                    </a>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -196,19 +120,11 @@
                         <a class="nav-link" href="#">
                             <i class="bi bi-graph-up"></i> Relatórios
                         </a>
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-people"></i> Subusuários
-                        </a>
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-gear"></i> Configurações
-                        </a>
                     </nav>
                 </div>
                 
                 <!-- Main Content Area -->
                 <div class="col-md-9 col-lg-10 p-4">
-                    {% block breadcrumb %}{% endblock %}
-                    
                     {% if messages %}
                         {% for message in messages %}
                             <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -238,52 +154,8 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-white border-top mt-5 py-4">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-6">
-                    <p class="mb-0 text-muted">&copy; 2024 XBPNEUS. Todos os direitos reservados.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <p class="mb-0 text-muted">Sistema de Gestão de Frota v2.0</p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom JS -->
-    <script>
-        // Auto-hide alerts after 5 seconds
-        document.addEventListener('DOMContentLoaded', function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(function(alert) {
-                setTimeout(function() {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                }, 5000);
-            });
-        });
-        
-        // Add loading state to buttons
-        document.addEventListener('DOMContentLoaded', function() {
-            const forms = document.querySelectorAll('form');
-            forms.forEach(function(form) {
-                form.addEventListener('submit', function() {
-                    const submitBtn = form.querySelector('button[type="submit"]');
-                    if (submitBtn) {
-                        submitBtn.disabled = true;
-                        submitBtn.innerHTML = '<span class="loading"></span> Processando...';
-                    }
-                });
-            });
-        });
-    </script>
-    
-    {% block extra_js %}{% endblock %}
 </body>
 </html>
 
