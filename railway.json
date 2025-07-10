@@ -7,8 +7,7 @@
   "deploy": {
     "numReplicas": 1,
     "sleepApplication": false,
-    "restartPolicyType": "ON_FAILURE",
-    "startCommand": "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn xbpneus.config.wsgi:application --bind 0.0.0.0:$PORT"
+    "restartPolicyType": "ON_FAILURE"
   }
 }
 
