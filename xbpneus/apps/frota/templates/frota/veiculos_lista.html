@@ -1,0 +1,93 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Veículos - Gestão de Frota{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Meus Veículos</h2>
+                <div>
+                    <a href="{% url 'frota:dashboard' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                    <a href="{% url 'frota:cadastrar_veiculo' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Novo Veículo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if veiculos %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Placa</th>
+                                    <th>Modelo</th>
+                                    <th>Cor</th>
+                                    <th>Ano</th>
+                                    <th>KM</th>
+                                    <th>Pneus</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for veiculo in veiculos %}
+                                <tr>
+                                    <td><strong>{{ veiculo.placa }}</strong></td>
+                                    <td>{{ veiculo.modelo }}</td>
+                                    <td>{{ veiculo.cor }}</td>
+                                    <td>{{ veiculo.ano }}</td>
+                                    <td>{{ veiculo.km|floatformat:0 }} km</td>
+                                    <td>
+                                        <span class="badge badge-info">{{ veiculo.pneus.count }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'frota:detalhes_veiculo' veiculo.id %}" 
+                                               class="btn btn-sm btn-primary" title="Ver Detalhes">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'frota:editar_veiculo' veiculo.id %}" 
+                                               class="btn btn-sm btn-warning" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'frota:cadastrar_pneu_veiculo' veiculo.id %}" 
+                                               class="btn btn-sm btn-success" title="Adicionar Pneu">
+                                                <i class="fas fa-plus"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <h4>Nenhum veículo cadastrado</h4>
+                <p>Você ainda não possui veículos em sua frota.</p>
+                <a href="{% url 'frota:cadastrar_veiculo' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Cadastrar Primeiro Veículo
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

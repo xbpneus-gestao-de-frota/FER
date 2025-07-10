@@ -13,6 +13,7 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     path('painel/', painel_cliente, name='painel_cliente'),
+    path('frota/', include('xbpneus.apps.frota.urls')),
     path('', include('xbpneus.apps.home.urls')),
     path('produtos/', include('xbpneus.apps.produtos.urls')),
     path('servicos/', include('xbpneus.apps.servicos.urls')),

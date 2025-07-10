@@ -1,0 +1,169 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Gestão de Frota{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2>Dashboard - Gestão de Frota</h2>
+            <p class="text-muted">Bem-vindo ao sistema de gestão de pneus XBPNEUS</p>
+        </div>
+    </div>
+    
+    <!-- Cards de Estatísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Veículos</h5>
+                    <h2>{{ total_veiculos }}</h2>
+                    <p class="card-text">Total cadastrados</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Pneus</h5>
+                    <h2>{{ total_pneus }}</h2>
+                    <p class="card-text">Total em uso</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Investimento</h5>
+                    <h2>R$ {{ custo_total_pneus|floatformat:2 }}</h2>
+                    <p class="card-text">Total em pneus</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Atenção</h5>
+                    <h2>{{ pneus_atencao }}</h2>
+                    <p class="card-text">Pneus para trocar</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Menu de Navegação -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Menu Principal</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'frota:listar_veiculos' %}" class="btn btn-outline-primary btn-lg w-100">
+                                <i class="fas fa-truck"></i><br>
+                                Veículos
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'frota:listar_pneus' %}" class="btn btn-outline-success btn-lg w-100">
+                                <i class="fas fa-circle"></i><br>
+                                Pneus
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'frota:cadastrar_veiculo' %}" class="btn btn-outline-info btn-lg w-100">
+                                <i class="fas fa-plus"></i><br>
+                                Novo Veículo
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'frota:relatorios' %}" class="btn btn-outline-warning btn-lg w-100">
+                                <i class="fas fa-chart-bar"></i><br>
+                                Relatórios
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Últimos Veículos -->
+    {% if veiculos %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Últimos Veículos Cadastrados</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Placa</th>
+                                    <th>Modelo</th>
+                                    <th>Ano</th>
+                                    <th>KM</th>
+                                    <th>Pneus</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for veiculo in veiculos %}
+                                <tr>
+                                    <td><strong>{{ veiculo.placa }}</strong></td>
+                                    <td>{{ veiculo.modelo }}</td>
+                                    <td>{{ veiculo.ano }}</td>
+                                    <td>{{ veiculo.km|floatformat:0 }} km</td>
+                                    <td>{{ veiculo.pneus.count }}</td>
+                                    <td>
+                                        <a href="{% url 'frota:detalhes_veiculo' veiculo.id %}" class="btn btn-sm btn-primary">Ver</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center">
+                        <a href="{% url 'frota:listar_veiculos' %}" class="btn btn-primary">Ver Todos os Veículos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <h4>Bem-vindo ao Sistema XBPNEUS!</h4>
+                <p>Você ainda não possui veículos cadastrados.</p>
+                <a href="{% url 'frota:cadastrar_veiculo' %}" class="btn btn-primary">Cadastrar Primeiro Veículo</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: none;
+    margin-bottom: 20px;
+}
+
+.btn-lg {
+    padding: 20px;
+    font-size: 16px;
+}
+
+.btn-lg i {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+</style>
+{% endblock %}
+
