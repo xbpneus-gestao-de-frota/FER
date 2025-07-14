@@ -123,7 +123,7 @@
                     </nav>
                 </div>
                 
-                <!-- Main Content Area -->
+                <!-- Main Content Area for Authenticated Users -->
                 <div class="col-md-9 col-lg-10 p-4">
                     {% if messages %}
                         {% for message in messages %}
@@ -134,10 +134,11 @@
                         {% endfor %}
                     {% endif %}
                     
+                    <!-- ÚNICO BLOCO CONTENT - Para usuários autenticados -->
                     {% block content %}{% endblock %}
                 </div>
             {% else %}
-                <!-- Full Width for Login -->
+                <!-- Full Width for Login - NO BLOCK CONTENT HERE -->
                 <div class="col-12">
                     {% if messages %}
                         {% for message in messages %}
@@ -148,7 +149,8 @@
                         {% endfor %}
                     {% endif %}
                     
-                    {% block content %}{% endblock %}
+                    <!-- BLOCO RENOMEADO para login -->
+                    {% block login_content %}{% endblock %}
                 </div>
             {% endif %}
         </div>
