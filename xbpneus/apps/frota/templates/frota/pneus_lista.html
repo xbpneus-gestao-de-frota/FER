@@ -1,0 +1,85 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Lista de Pneus | XBPNEUS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-circle"></i> Lista de Pneus</h2>
+    <a href="{% url 'frota:cadastrar_pneu' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Cadastrar Pneu
+    </a>
+</div>
+
+{% if pneus %}
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Veículo</th>
+                            <th>Posição</th>
+                            <th>Marca</th>
+                            <th>Medida</th>
+                            <th>Profundidade</th>
+                            <th>Custo</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pneu in pneus %}
+                        <tr>
+                            <td>
+                                <strong>{{ pneu.veiculo.placa }}</strong><br>
+                                <small class="text-muted">{{ pneu.veiculo.modelo }}</small>
+                            </td>
+                            <td>{{ pneu.posicao }}</td>
+                            <td>{{ pneu.marca }}</td>
+                            <td>{{ pneu.medida }}</td>
+                            <td>
+                                <span class="badge {% if pneu.profundidade_sulco < 3 %}bg-danger{% elif pneu.profundidade_sulco < 5 %}bg-warning{% else %}bg-success{% endif %}">
+                                    {{ pneu.profundidade_sulco }}mm
+                                </span>
+                            </td>
+                            <td>R$ {{ pneu.custo|floatformat:2 }}</td>
+                            <td>
+                                {% if pneu.profundidade_sulco < 3 %}
+                                    <span class="badge bg-danger">Crítico</span>
+                                {% elif pneu.profundidade_sulco < 5 %}
+                                    <span class="badge bg-warning">Atenção</span>
+                                {% else %}
+                                    <span class="badge bg-success">Bom</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'frota:detalhes_veiculo' pneu.veiculo.id %}" class="btn btn-outline-primary" title="Ver Veículo">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'frota:editar_pneu' pneu.id %}" class="btn btn-outline-warning" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-circle display-1 text-muted"></i>
+            <h4 class="mt-3">Nenhum pneu cadastrado</h4>
+            <p class="text-muted">Comece cadastrando um pneu para seus veículos.</p>
+            <a href="{% url 'frota:cadastrar_pneu' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Cadastrar Primeiro Pneu
+            </a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
+

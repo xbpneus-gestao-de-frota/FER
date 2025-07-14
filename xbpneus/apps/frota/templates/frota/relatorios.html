@@ -1,0 +1,161 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Relatórios | XBPNEUS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-graph-up"></i> Relatórios</h2>
+    <button class="btn btn-outline-primary" onclick="window.print()">
+        <i class="bi bi-printer"></i> Imprimir
+    </button>
+</div>
+
+<!-- Relatório por Veículo -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-truck"></i> Relatório por Veículo</h5>
+    </div>
+    <div class="card-body">
+        {% if relatorio_veiculos %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Veículo</th>
+                            <th>Placa</th>
+                            <th>Total de Pneus</th>
+                            <th>Custo Total</th>
+                            <th>Profundidade Média</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in relatorio_veiculos %}
+                        <tr>
+                            <td>
+                                <strong>{{ item.veiculo.modelo }}</strong><br>
+                                <small class="text-muted">{{ item.veiculo.marca }}</small>
+                            </td>
+                            <td>{{ item.veiculo.placa }}</td>
+                            <td>{{ item.total_pneus }}</td>
+                            <td>R$ {{ item.custo_total|floatformat:2 }}</td>
+                            <td>{{ item.profundidade_media }}mm</td>
+                            <td>
+                                {% if item.profundidade_media < 3 %}
+                                    <span class="badge bg-danger">Crítico</span>
+                                {% elif item.profundidade_media < 5 %}
+                                    <span class="badge bg-warning">Atenção</span>
+                                {% else %}
+                                    <span class="badge bg-success">Bom</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="bi bi-truck display-4 text-muted"></i>
+                <p class="mt-3 text-muted">Nenhum veículo cadastrado para gerar relatório.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Relatório por Medida de Pneu -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-circle"></i> Pneus por Medida</h5>
+    </div>
+    <div class="card-body">
+        {% if pneus_por_medida %}
+            <div class="row">
+                {% for item in pneus_por_medida %}
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card border-left-primary">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ item.medida }}</h6>
+                            <p class="card-text">
+                                <strong>{{ item.quantidade }}</strong> pneus<br>
+                                <small class="text-muted">Custo total: R$ {{ item.custo_total|floatformat:2 }}</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="bi bi-circle display-4 text-muted"></i>
+                <p class="mt-3 text-muted">Nenhum pneu cadastrado para gerar relatório.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Resumo Geral -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Resumo Geral</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h4>{{ relatorio_veiculos|length }}</h4>
+                        <p class="mb-0">Veículos</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h4>
+                            {% for item in relatorio_veiculos %}
+                                {% if forloop.first %}{{ item.total_pneus }}{% endif %}
+                                {% if not forloop.first %}{{ item.total_pneus|add:0 }}{% endif %}
+                            {% endfor %}
+                        </h4>
+                        <p class="mb-0">Total de Pneus</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <h4>R$ 
+                            {% for item in relatorio_veiculos %}
+                                {% if forloop.first %}{{ item.custo_total|floatformat:0 }}{% endif %}
+                            {% endfor %}
+                        </h4>
+                        <p class="mb-0">Investimento Total</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h4>{{ pneus_por_medida|length }}</h4>
+                        <p class="mb-0">Medidas Diferentes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .btn, .navbar, .sidebar {
+        display: none !important;
+    }
+    .card {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+    }
+}
+</style>
+{% endblock %}
+
