@@ -20,6 +20,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     path('painel/', painel_cliente, name='painel_cliente'),
     path('frota/', include('xbpneus.apps.frota.urls')),
+    path('painel/subusuarios/', include('xbpneus.apps.subusuarios.urls')),
     
     # Rotas de redirecionamento para integração com site principal
     path('transportador/', transportador_redirect, name='transportador_redirect'),

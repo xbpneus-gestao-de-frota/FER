@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'xbpneus.apps.servicos',
     'xbpneus.apps.contato',
     'xbpneus.apps.frota',
+    'xbpneus.apps.subusuarios',
     'xbpneus.core',
 ]
 

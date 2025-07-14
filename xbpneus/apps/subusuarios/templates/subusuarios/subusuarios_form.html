@@ -1,0 +1,238 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ titulo }} | XBPNEUS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2><i class="bi bi-person-plus"></i> {{ titulo }}</h2>
+        <p class="text-muted mb-0">
+            {% if subusuario %}
+                Edite as informações do subusuário
+            {% else %}
+                Cadastre um novo subusuário para sua empresa
+            {% endif %}
+        </p>
+    </div>
+    <a href="{% url 'subusuarios:listar_subusuarios' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-person-badge"></i> Informações do Subusuário
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.nome.id_for_label }}" class="form-label">
+                                {{ form.nome.label }}
+                                <span class="text-danger">*</span>
+                            </label>
+                            {{ form.nome }}
+                            {% if form.nome.help_text %}
+                                <div class="form-text">{{ form.nome.help_text }}</div>
+                            {% endif %}
+                            {% if form.nome.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.nome.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">
+                                {{ form.email.label }}
+                                <span class="text-danger">*</span>
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.help_text %}
+                                <div class="form-text">{{ form.email.help_text }}</div>
+                            {% endif %}
+                            {% if form.email.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.email.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.funcao.id_for_label }}" class="form-label">
+                                {{ form.funcao.label }}
+                                <span class="text-danger">*</span>
+                            </label>
+                            {{ form.funcao }}
+                            {% if form.funcao.help_text %}
+                                <div class="form-text">{{ form.funcao.help_text }}</div>
+                            {% endif %}
+                            {% if form.funcao.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.funcao.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check mt-4">
+                                {{ form.ativo }}
+                                <label class="form-check-label" for="{{ form.ativo.id_for_label }}">
+                                    {{ form.ativo.label }}
+                                </label>
+                                {% if form.ativo.help_text %}
+                                    <div class="form-text">{{ form.ativo.help_text }}</div>
+                                {% endif %}
+                                {% if form.ativo.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.ativo.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'subusuarios:listar_subusuarios' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> {{ botao_texto }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        {% if subusuario %}
+        <!-- Card de Informações Adicionais -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle"></i> Informações Adicionais
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">Data de Criação:</small>
+                        <p class="mb-2">{{ subusuario.data_criacao|date:"d/m/Y H:i" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Última Atualização:</small>
+                        <p class="mb-2">{{ subusuario.data_atualizacao|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">Status Atual:</small>
+                        <p class="mb-0">
+                            {% if subusuario.ativo %}
+                                <span class="badge bg-success">Ativo</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inativo</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Função:</small>
+                        <p class="mb-0">
+                            {% with badge=subusuario.get_funcao_display_badge %}
+                                <span class="badge {{ badge.classe }}">{{ badge.texto }}</span>
+                            {% endwith %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Validação do formulário
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const inputs = form.querySelectorAll('input[required], select[required]');
+    
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+        
+        input.addEventListener('input', function() {
+            if (this.classList.contains('is-invalid')) {
+                validateField(this);
+            }
+        });
+    });
+    
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        inputs.forEach(input => {
+            if (!validateField(input)) {
+                isValid = false;
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+    
+    function validateField(field) {
+        const value = field.value.trim();
+        let isValid = true;
+        
+        // Remove classes anteriores
+        field.classList.remove('is-valid', 'is-invalid');
+        
+        // Validação básica de campo obrigatório
+        if (field.hasAttribute('required') && !value) {
+            field.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        // Validação específica para email
+        if (field.type === 'email' && value) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(value)) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            }
+        }
+        
+        if (isValid && value) {
+            field.classList.add('is-valid');
+        }
+        
+        return isValid;
+    }
+});
+</script>
+{% endblock %}
+
