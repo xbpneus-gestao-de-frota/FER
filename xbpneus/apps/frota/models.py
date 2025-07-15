@@ -94,3 +94,8 @@ class HistoricoPneu(models.Model):
     def __str__(self):
         return f"{self.pneu} - {self.get_tipo_evento_display()} - {self.data_evento}"
 
+
+
+# Importar novos models de estoque
+from .models_estoque import PneuEstoque, VinculacaoPneu, HistoricoMovimentacao
+
