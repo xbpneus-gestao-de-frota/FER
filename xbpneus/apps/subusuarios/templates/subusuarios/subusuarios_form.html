@@ -108,6 +108,74 @@
                         </div>
                     </div>
                     
+                    <!-- Seção de Módulos de Acesso -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="bi bi-shield-check"></i> Liberações de Acesso
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <!-- Perfil de Acesso -->
+                            {% if form.perfil_acesso %}
+                            <div class="mb-4">
+                                <label for="{{ form.perfil_acesso.id_for_label }}" class="form-label">
+                                    {{ form.perfil_acesso.label }}
+                                </label>
+                                {{ form.perfil_acesso }}
+                                {% if form.perfil_acesso.help_text %}
+                                    <div class="form-text">{{ form.perfil_acesso.help_text }}</div>
+                                {% endif %}
+                                {% if form.perfil_acesso.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.perfil_acesso.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Módulos Individuais -->
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.modulos.label }}</label>
+                                <div class="row">
+                                    {% for choice in form.modulos %}
+                                        <div class="col-md-4 col-sm-6 mb-2">
+                                            <div class="form-check">
+                                                {{ choice.tag }}
+                                                <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                                    <i class="bi bi-circle me-1"></i>
+                                                    {{ choice.choice_label }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% if form.modulos.help_text %}
+                                    <div class="form-text">{{ form.modulos.help_text }}</div>
+                                {% endif %}
+                                {% if form.modulos.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.modulos.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Botões de Ação Rápida -->
+                            <div class="d-flex gap-2 flex-wrap">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="selecionarTodos()">
+                                    <i class="bi bi-check-all"></i> Selecionar Todos
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="desmarcarTodos()">
+                                    <i class="bi bi-x-square"></i> Desmarcar Todos
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
                     {% if form.non_field_errors %}
                         <div class="alert alert-danger">
                             {% for error in form.non_field_errors %}
@@ -178,6 +246,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
     const inputs = form.querySelectorAll('input[required], select[required]');
+    const perfilSelect = document.getElementById('id_perfil_acesso');
     
     inputs.forEach(input => {
         input.addEventListener('blur', function() {
@@ -203,6 +272,16 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
         }
     });
+    
+    // Integração com perfis de acesso
+    if (perfilSelect) {
+        perfilSelect.addEventListener('change', function() {
+            const perfilId = this.value;
+            if (perfilId) {
+                carregarModulosPerfil(perfilId);
+            }
+        });
+    }
     
     function validateField(field) {
         const value = field.value.trim();
@@ -232,7 +311,44 @@ document.addEventListener('DOMContentLoaded', function() {
         
         return isValid;
     }
+    
+    function carregarModulosPerfil(perfilId) {
+        fetch(`/painel/subusuarios/api/perfil/${perfilId}/modulos/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Desmarcar todos primeiro
+                    desmarcarTodos();
+                    
+                    // Marcar módulos do perfil
+                    data.modulos.forEach(moduloId => {
+                        const checkbox = document.querySelector(`input[name="modulos"][value="${moduloId}"]`);
+                        if (checkbox) {
+                            checkbox.checked = true;
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar módulos do perfil:', error);
+            });
+    }
 });
+
+// Funções para seleção de módulos
+function selecionarTodos() {
+    const checkboxes = document.querySelectorAll('input[name="modulos"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = true;
+    });
+}
+
+function desmarcarTodos() {
+    const checkboxes = document.querySelectorAll('input[name="modulos"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+}
 </script>
 {% endblock %}
 
