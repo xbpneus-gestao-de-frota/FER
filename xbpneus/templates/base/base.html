@@ -86,10 +86,66 @@
             transform: scale(1.1);
         }
         
+        /* Menu Lateral */
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            width: 250px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            padding: 12px 20px;
+            margin: 2px 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            border: none;
+            background: none;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white !important;
+            transform: translateX(5px);
+        }
+        
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white !important;
+        }
+        
+        .menu-mascote-icon {
+            width: 32px;
+            height: 32px;
+            margin-right: 12px;
+            border-radius: 6px;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+        
+        .nav-link:hover .menu-mascote-icon {
+            transform: scale(1.1);
+        }
+        
         .submenu-item {
             padding-left: 44px !important;
             font-size: 0.9em;
             opacity: 0.8;
+            color: rgba(255, 255, 255, 0.8) !important;
+            margin: 1px 8px;
+        }
+        
+        .submenu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white !important;
         }
         
         .submenu-icon {
@@ -107,6 +163,7 @@
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
+            color: rgba(255, 255, 255, 0.9) !important;
         }
         
         .submenu-toggle {
@@ -120,30 +177,34 @@
         }
         
         .submenu-items {
-            background: rgba(0,0,0,0.05);
-            border-radius: 0 0 8px 8px;
-            margin-top: 2px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin: 4px 8px;
+            overflow: hidden;
         }
         
-        .submenu-item {
-            display: block;
-            padding: 8px 16px 8px 44px !important;
-            color: #6c757d;
-            text-decoration: none;
-            font-size: 0.9em;
-            border-radius: 4px;
-            margin: 2px 8px;
-            transition: all 0.2s ease;
+        .submenu-items.show {
+            display: block !important;
         }
         
-        .submenu-item:hover {
-            background: rgba(0,123,255,0.1);
-            color: #007bff;
-            text-decoration: none;
+        /* Conteúdo principal */
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            min-height: 100vh;
         }
         
         /* Responsividade para mascotes */
         @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
             .menu-mascote-icon {
                 width: 28px;
                 height: 28px;
@@ -184,14 +245,14 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="container-fluid">
-        <div class="row">
-            {% if user.is_authenticated %}
-                <!-- Sidebar -->
-                <div class="col-md-3 col-lg-2 sidebar p-3">
+    <div class="d-flex">
+        {% if user.is_authenticated %}
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="p-3">
                     <nav class="nav flex-column">
                         <!-- Dashboard -->
-                        <a class="nav-link active" href="/painel/">
+                        <a class="nav-link" href="/painel/">
                             <img src="{% static 'mascotes/dashboard.jpg' %}" alt="Dashboard" class="menu-mascote-icon">
                             Dashboard
                         </a>
@@ -199,15 +260,17 @@
                         <!-- Frota -->
                         <div class="nav-item pilar-menu">
                             <a class="nav-link pilar-link" href="/frota/" data-pilar="frota">
-                                <img src="{% static 'mascotes/frota.webp' %}" alt="Frota" class="menu-mascote-icon">
-                                Frota
-                                <i class="bi bi-chevron-right submenu-toggle ms-auto"></i>
+                                <div class="d-flex align-items-center">
+                                    <img src="{% static 'mascotes/frota.webp' %}" alt="Frota" class="menu-mascote-icon">
+                                    <span>Frota</span>
+                                </div>
+                                <i class="bi bi-chevron-right submenu-toggle"></i>
                             </a>
                             <div class="submenu-items collapse" id="submenu-frota">
-                                <a class="submenu-item" href="/frota/"><i class="bi bi-list-ul"></i> Lista da Frota</a>
-                                <a class="submenu-item" href="/frota/cadastrar/"><i class="bi bi-plus-circle"></i> Cadastro Simples</a>
-                                <a class="submenu-item" href="/frota/cadastrar-automatizado/"><i class="bi bi-magic"></i> Cadastro Automatizado</a>
-                                <a class="submenu-item" href="/frota/relatorios/"><i class="bi bi-graph-up"></i> Relatórios</a>
+                                <a class="submenu-item" href="/frota/"><i class="bi bi-list-ul submenu-icon"></i> Lista da Frota</a>
+                                <a class="submenu-item" href="/frota/cadastrar/"><i class="bi bi-plus-circle submenu-icon"></i> Cadastro Simples</a>
+                                <a class="submenu-item" href="/frota/cadastrar-automatizado/"><i class="bi bi-magic submenu-icon"></i> Cadastro Automatizado</a>
+                                <a class="submenu-item" href="/frota/relatorios/"><i class="bi bi-graph-up submenu-icon"></i> Relatórios</a>
                             </div>
                         </div>
                         
@@ -256,30 +319,33 @@
                         <!-- Configurações (10º pilar) -->
                         <div class="nav-item pilar-menu">
                             <a class="nav-link pilar-link" href="{% url 'configuracoes:dashboard' %}" data-pilar="configuracoes">
-                                <img src="{% static 'mascotes/configuracoes.webp' %}" alt="Configurações" class="menu-mascote-icon">
-                                Configurações
-                                <i class="bi bi-chevron-right submenu-toggle ms-auto"></i>
+                                <div class="d-flex align-items-center">
+                                    <img src="{% static 'mascotes/configuracoes.webp' %}" alt="Configurações" class="menu-mascote-icon">
+                                    <span>Configurações</span>
+                                </div>
+                                <i class="bi bi-chevron-right submenu-toggle"></i>
                             </a>
                             <div class="submenu-items collapse" id="submenu-configuracoes">
                                 <a class="submenu-item" href="{% url 'configuracoes:dashboard' %}">
-                                    <i class="bi bi-gear"></i> Painel Geral
+                                    <i class="bi bi-gear submenu-icon"></i> Painel Geral
                                 </a>
                                 <a class="submenu-item" href="{% url 'configuracoes:empresa' %}">
-                                    <i class="bi bi-building"></i> Empresa
+                                    <i class="bi bi-building submenu-icon"></i> Empresa
                                 </a>
                                 <a class="submenu-item" href="{% url 'configuracoes:preferencias' %}">
-                                    <i class="bi bi-sliders"></i> Preferências
+                                    <i class="bi bi-sliders submenu-icon"></i> Preferências
                                 </a>
                                 <a class="submenu-item" href="{% url 'configuracoes:subusuarios:listar_subusuarios' %}">
-                                    <i class="bi bi-people"></i> Subusuários
+                                    <i class="bi bi-people submenu-icon"></i> Subusuários
                                 </a>
                             </div>
                         </div>
                     </nav>
                 </div>
-                
-                <!-- Main Content Area for Authenticated Users -->
-                <div class="col-md-9 col-lg-10 p-4">
+            </div>
+            
+            <!-- Main Content -->
+            <div class="main-content flex-grow-1">
                     {% if messages %}
                         {% for message in messages %}
                             <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
