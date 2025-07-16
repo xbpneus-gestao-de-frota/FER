@@ -40,7 +40,7 @@ urlpatterns = [
     path('financeiro/', central_financeiro, name='central_financeiro'),
     
     # Configurações
-    path('painel/configuracoes/', include('xbpneus.apps.configuracoes.urls')),
+    path('painel/configuracoes/', include(('xbpneus.apps.configuracoes.urls', 'configuracoes'), namespace='configuracoes')),
     
     # Rotas de redirecionamento para integração com site principal
     path('transportador/', transportador_redirect, name='transportador_redirect'),

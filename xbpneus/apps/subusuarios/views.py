@@ -4,8 +4,12 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.db.models import Q, Count
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+from django.views.decorators.csrf import csrf_exempt
 from .models import SubUsuario, ModuloAcesso, PerfilAcesso
 from .forms import SubUsuarioForm, PerfilAcessoForm, ModuloAcessoForm, FiltroSubUsuarioForm
+from .utils import enviar_convite_subusuario, reenviar_convite_subusuario, validar_token_convite, definir_senha_subusuario
 
 
 @login_required
@@ -46,10 +50,27 @@ def cadastrar_subusuario(request):
         form = SubUsuarioForm(request.POST, usuario_principal=request.user)
         if form.is_valid():
             subusuario = form.save()
-            messages.success(
-                request, 
-                f'Subusuário "{subusuario.nome}" cadastrado com sucesso!'
-            )
+            
+            # Verificar se deve enviar convite
+            if form.cleaned_data.get('enviar_convite'):
+                if enviar_convite_subusuario(subusuario, request):
+                    messages.success(
+                        request, 
+                        f'Subusuário "{subusuario.nome}" cadastrado com sucesso! '
+                        f'Convite enviado para {subusuario.email}.'
+                    )
+                else:
+                    messages.warning(
+                        request, 
+                        f'Subusuário "{subusuario.nome}" cadastrado, mas houve erro ao enviar o convite. '
+                        f'Você pode reenviar o convite na listagem.'
+                    )
+            else:
+                messages.success(
+                    request, 
+                    f'Subusuário "{subusuario.nome}" cadastrado com sucesso!'
+                )
+            
             return redirect('configuracoes:subusuarios:listar_subusuarios')
     else:
         form = SubUsuarioForm(usuario_principal=request.user)
@@ -60,7 +81,7 @@ def cadastrar_subusuario(request):
         'botao_texto': 'Cadastrar',
         'perfis_acesso': PerfilAcesso.objects.filter(ativo=True),
     }
-    return render(request, 'subusuarios/subusuarios_form.html', context)
+    return render(request, 'subusuarios/subusuarios_form_novo.html', context)
 
 
 @login_required
@@ -95,7 +116,7 @@ def editar_subusuario(request, subusuario_id):
         'botao_texto': 'Atualizar',
         'perfis_acesso': PerfilAcesso.objects.filter(ativo=True),
     }
-    return render(request, 'subusuarios/subusuarios_form.html', context)
+    return render(request, 'subusuarios/subusuarios_form_novo.html', context)
 
 
 @login_required
