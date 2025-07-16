@@ -149,10 +149,9 @@ class SubUsuarioForm(forms.ModelForm):
         return email
     
     def clean_modulos(self):
-        """Validar que pelo menos um módulo seja selecionado"""
-        modulos = self.cleaned_data.get('modulos')
-        if not modulos or modulos.count() == 0:
-            raise forms.ValidationError("Selecione pelo menos um pilar de acesso.")
+        modulos = self.cleaned_data.get("modulos")
+        if not modulos:
+            raise ValidationError("Selecione pelo menos um pilar.")
         return modulos
     
     def clean(self):
