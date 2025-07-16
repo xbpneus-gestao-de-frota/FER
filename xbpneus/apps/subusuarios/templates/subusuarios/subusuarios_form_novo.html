@@ -249,16 +249,25 @@
                         </div>
                         
                         <div class="pilares-grid">
-                            {% for choice in form.modulos %}
-                                <div class="pilar-item" data-modulo="{{ choice.choice_value }}">
-                                    <div class="form-check">
-                                        {{ choice.tag }}
-                                        <label class="form-check-label" for="{{ choice.id_for_label }}">
-                                            <strong>{{ choice.choice_label }}</strong>
-                                        </label>
+                            <!-- Renderização direta dos checkboxes -->
+                            <div class="row">
+                                {% for modulo in form.modulos.field.queryset %}
+                                    <div class="col-md-6 col-lg-4 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input modulo-checkbox" 
+                                                   type="checkbox" 
+                                                   name="modulos" 
+                                                   value="{{ modulo.id }}" 
+                                                   id="id_modulos_{{ modulo.id }}"
+                                                   {% if modulo in form.modulos.value %}checked{% endif %}>
+                                            <label class="form-check-label" for="id_modulos_{{ modulo.id }}">
+                                                <i class="{{ modulo.icone|default:'bi-circle' }}"></i>
+                                                <strong>{{ modulo.nome }}</strong>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
-                            {% endfor %}
+                                {% endfor %}
+                            </div>
                         </div>
                         
                         {% if form.modulos.errors %}
