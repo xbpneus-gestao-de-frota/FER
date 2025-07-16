@@ -13,7 +13,7 @@ urlpatterns = [
     # Preferências do usuário
     path('preferencias/', views.preferencias_usuario, name='preferencias'),
     
-    # Subusuários (incluído como submenu)
-    path('subusuarios/', include('xbpneus.apps.subusuarios.urls')),
+    # Subusuários (incluído como submenu com namespace)
+    path('subusuarios/', include(('xbpneus.apps.subusuarios.urls', 'subusuarios'), namespace='subusuarios')),
 ]
 

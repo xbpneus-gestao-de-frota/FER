@@ -50,7 +50,7 @@ def cadastrar_subusuario(request):
                 request, 
                 f'Subusuário "{subusuario.nome}" cadastrado com sucesso!'
             )
-            return redirect('subusuarios:listar_subusuarios')
+            return redirect('configuracoes:subusuarios:listar_subusuarios')
     else:
         form = SubUsuarioForm(usuario_principal=request.user)
     
@@ -84,7 +84,7 @@ def editar_subusuario(request, subusuario_id):
                 request, 
                 f'Subusuário "{subusuario.nome}" atualizado com sucesso!'
             )
-            return redirect('subusuarios:listar_subusuarios')
+            return redirect('configuracoes:subusuarios:listar_subusuarios')
     else:
         form = SubUsuarioForm(instance=subusuario, usuario_principal=request.user)
     
@@ -128,7 +128,7 @@ def excluir_subusuario(request, subusuario_id):
     subusuario.delete()
     
     messages.success(request, f'Subusuário "{nome}" excluído com sucesso!')
-    return redirect('subusuarios:listar_subusuarios')
+    return redirect('configuracoes:subusuarios:listar_subusuarios')
 
 
 @login_required

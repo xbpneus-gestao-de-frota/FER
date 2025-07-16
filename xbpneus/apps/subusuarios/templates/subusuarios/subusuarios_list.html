@@ -8,7 +8,7 @@
         <h2><i class="bi bi-people"></i> Subusuários</h2>
         <p class="text-muted mb-0">Gerencie os subusuários da sua empresa</p>
     </div>
-    <a href="{% url 'subusuarios:cadastrar_subusuario' %}" class="btn btn-primary">
+    <a href="{% url 'configuracoes:subusuarios:cadastrar_subusuario' %}" class="btn btn-primary">
         <i class="bi bi-person-plus"></i> Cadastrar Subusuário
     </a>
 </div>
@@ -97,7 +97,7 @@
                             <td>{{ subusuario.data_criacao|date:"d/m/Y H:i" }}</td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    <a href="{% url 'subusuarios:editar_subusuario' subusuario.id %}" 
+                                    <a href="{% url 'configuracoes:subusuarios:editar_subusuario' subusuario.id %}" 
                                        class="btn btn-outline-primary" title="Editar">
                                         <i class="bi bi-pencil"></i>
                                     </a>
@@ -130,7 +130,7 @@
             <i class="bi bi-people display-1 text-muted"></i>
             <h4 class="mt-3">Nenhum subusuário cadastrado</h4>
             <p class="text-muted">Comece cadastrando subusuários para sua empresa.</p>
-            <a href="{% url 'subusuarios:cadastrar_subusuario' %}" class="btn btn-primary">
+            <a href="{% url 'configuracoes:subusuarios:cadastrar_subusuario' %}" class="btn btn-primary">
                 <i class="bi bi-person-plus"></i> Cadastrar Primeiro Subusuário
             </a>
         </div>
@@ -171,7 +171,7 @@ document.getElementById('btnConfirmarExclusao').addEventListener('click', functi
         // Criar formulário para enviar POST
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = `/painel/subusuarios/${subusuarioIdParaExcluir}/excluir/`;
+        form.action = `/painel/configuracoes/subusuarios/${subusuarioIdParaExcluir}/excluir/`;
         
         // Adicionar CSRF token
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
@@ -193,7 +193,7 @@ function alternarStatus(id, nome) {
         // Criar formulário para enviar POST
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = `/painel/subusuarios/${id}/alternar-status/`;
+        form.action = `/painel/configuracoes/subusuarios/${id}/alternar-status/`;
         
         // Adicionar CSRF token
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
