@@ -272,8 +272,66 @@
                                     font-weight: bold !important;
                                     color: #333 !important;
                                 }
+                                .pilares-manual {
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                                    gap: 10px;
+                                    margin-top: 15px;
+                                }
+                                .pilar-checkbox {
+                                    display: flex;
+                                    align-items: center;
+                                    padding: 8px;
+                                    border: 1px solid #ddd;
+                                    border-radius: 5px;
+                                    background: #f8f9fa;
+                                }
                             </style>
                             {{ form.modulos }}
+                            
+                            <!-- Checkboxes manuais como fallback -->
+                            <div class="pilares-manual" id="pilares-manual">
+                                <div class="pilar-checkbox">
+                                    <input type="checkbox" name="modulos" value="1" id="manual_modulos_1">
+                                    <label for="manual_modulos_1">Dashboard</label>
+                                </div>
+                                <div class="pilar-checkbox">
+                                    <input type="checkbox" name="modulos" value="2" id="manual_modulos_2">
+                                    <label for="manual_modulos_2">Frota</label>
+                                </div>
+                                <div class="pilar-checkbox">
+                                    <input type="checkbox" name="modulos" value="3" id="manual_modulos_3">
+                                    <label for="manual_modulos_3">Estoque</label>
+                                </div>
+                                <div class="pilar-checkbox">
+                                    <input type="checkbox" name="modulos" value="4" id="manual_modulos_4">
+                                    <label for="manual_modulos_4">Manutenção</label>
+                                </div>
+                                <div class="pilar-checkbox">
+                                    <input type="checkbox" name="modulos" value="5" id="manual_modulos_5">
+                                    <label for="manual_modulos_5">Relatórios</label>
+                                </div>
+                                <div class="pilar-checkbox">
+                                    <input type="checkbox" name="modulos" value="6" id="manual_modulos_6">
+                                    <label for="manual_modulos_6">Financeiro</label>
+                                </div>
+                                <div class="pilar-checkbox">
+                                    <input type="checkbox" name="modulos" value="7" id="manual_modulos_7">
+                                    <label for="manual_modulos_7">Compras</label>
+                                </div>
+                                <div class="pilar-checkbox">
+                                    <input type="checkbox" name="modulos" value="8" id="manual_modulos_8">
+                                    <label for="manual_modulos_8">Eventos</label>
+                                </div>
+                                <div class="pilar-checkbox">
+                                    <input type="checkbox" name="modulos" value="9" id="manual_modulos_9">
+                                    <label for="manual_modulos_9">Notícias</label>
+                                </div>
+                                <div class="pilar-checkbox">
+                                    <input type="checkbox" name="modulos" value="10" id="manual_modulos_10">
+                                    <label for="manual_modulos_10">Configurações</label>
+                                </div>
+                            </div>
                         </div>
                         
                         {% if form.modulos.errors %}
