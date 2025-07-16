@@ -21,8 +21,8 @@ def redirect_pneus_para_estoque(request):
     return redirect('estoque:dashboard')
 
 urlpatterns = [
-    # Dashboard da Frota (rota raiz)
-    path('', views.listar_veiculos, name='dashboard'),
+    # Tela Central da Frota (rota raiz)
+    path('', views.central_frota, name='central'),
     
     # Rotas principais da Frota (nova nomenclatura)
     path('lista/', views.listar_veiculos, name='listar_frota'),

@@ -167,43 +167,43 @@
                         </div>
                         
                         <!-- Estoque (antigo: Pneus) -->
-                        <a class="nav-link" href="/frota/estoque/">
+                        <a class="nav-link" href="{% url 'central_estoque' %}">
                             <img src="{% static 'mascotes/estoque.jpg' %}" alt="Estoque" class="menu-mascote-icon">
                             Estoque
                         </a>
                         
                         <!-- Manutenção -->
-                        <a class="nav-link" href="/manutencao/">
+                        <a class="nav-link" href="{% url 'central_manutencao' %}">
                             <img src="{% static 'mascotes/manutencao.webp' %}" alt="Manutenção" class="menu-mascote-icon">
                             Manutenção
                         </a>
                         
                         <!-- Relatórios -->
-                        <a class="nav-link" href="/frota/relatorios/">
+                        <a class="nav-link" href="{% url 'central_relatorios' %}">
                             <img src="{% static 'mascotes/relatorios.webp' %}" alt="Relatórios" class="menu-mascote-icon">
                             Relatórios
                         </a>
                         
                         <!-- Financeiro -->
-                        <a class="nav-link" href="/financeiro/">
+                        <a class="nav-link" href="{% url 'central_financeiro' %}">
                             <img src="{% static 'mascotes/financeiro.webp' %}" alt="Financeiro" class="menu-mascote-icon">
                             Financeiro
                         </a>
                         
                         <!-- Compras -->
-                        <a class="nav-link" href="/compras/">
+                        <a class="nav-link" href="{% url 'central_compras' %}">
                             <img src="{% static 'mascotes/compras.webp' %}" alt="Compras" class="menu-mascote-icon">
                             Compras
                         </a>
                         
                         <!-- Eventos -->
-                        <a class="nav-link" href="/eventos/">
+                        <a class="nav-link" href="{% url 'central_eventos' %}">
                             <img src="{% static 'mascotes/eventos.webp' %}" alt="Eventos" class="menu-mascote-icon">
                             Eventos
                         </a>
                         
                         <!-- Notícias -->
-                        <a class="nav-link" href="/noticias/">
+                        <a class="nav-link" href="{% url 'central_noticias' %}">
                             <img src="{% static 'mascotes/noticias.jpg' %}" alt="Notícias" class="menu-mascote-icon">
                             Notícias
                         </a>

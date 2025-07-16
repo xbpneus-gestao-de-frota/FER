@@ -1,0 +1,199 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo_pilar }} - XBPNEUS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header do Pilar -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient-primary text-white">
+                <div class="card-body text-center py-5">
+                    <div class="row align-items-center">
+                        <div class="col-md-3 text-center">
+                            <img src="{% static mascote %}" alt="{{ titulo_pilar }}" class="img-fluid" style="max-height: 150px;">
+                        </div>
+                        <div class="col-md-9">
+                            <h1 class="display-4 mb-3">
+                                <i class="bi bi-truck"></i> {{ titulo_pilar }}
+                            </h1>
+                            <p class="lead mb-0">{{ descricao }}</p>
+                            <div class="mt-3">
+                                <span class="badge bg-light text-dark fs-6 me-2">
+                                    <i class="bi bi-truck-front"></i> {{ total_veiculos }} Veículo{{ total_veiculos|pluralize }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards de Ações Principais -->
+    <div class="row g-4">
+        <!-- Cadastro Simples -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0 hover-card">
+                <div class="card-body text-center p-4">
+                    <div class="mb-4">
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="bi bi-plus-circle-fill text-primary" style="font-size: 2.5rem;"></i>
+                        </div>
+                    </div>
+                    <h4 class="card-title mb-3">Cadastro Simples</h4>
+                    <p class="card-text text-muted mb-4">
+                        Cadastre veículos de forma rápida e direta com campos básicos essenciais.
+                    </p>
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="bi bi-clock"></i> Rápido e prático
+                        </small>
+                    </div>
+                    <a href="{% url 'frota:cadastrar_frota' %}" class="btn btn-primary btn-lg w-100">
+                        <i class="bi bi-plus-lg"></i> Cadastrar Simples
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cadastro Automatizado -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0 hover-card">
+                <div class="card-body text-center p-4">
+                    <div class="mb-4">
+                        <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="bi bi-gear-fill text-success" style="font-size: 2.5rem;"></i>
+                        </div>
+                    </div>
+                    <h4 class="card-title mb-3">Cadastro Automatizado</h4>
+                    <p class="card-text text-muted mb-4">
+                        Cadastre com combos inteligentes de marcas, modelos e especificações técnicas.
+                    </p>
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="bi bi-stars"></i> Dados padronizados
+                        </small>
+                    </div>
+                    <a href="{% url 'frota:cadastrar_automatizado' %}" class="btn btn-success btn-lg w-100">
+                        <i class="bi bi-magic"></i> Cadastrar Automatizado
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Editar Veículo -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0 hover-card">
+                <div class="card-body text-center p-4">
+                    <div class="mb-4">
+                        <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="bi bi-pencil-square text-warning" style="font-size: 2.5rem;"></i>
+                        </div>
+                    </div>
+                    <h4 class="card-title mb-3">Editar Veículo</h4>
+                    <p class="card-text text-muted mb-4">
+                        Atualize informações dos veículos já cadastrados em sua frota.
+                    </p>
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="bi bi-arrow-repeat"></i> Manter atualizado
+                        </small>
+                    </div>
+                    <a href="{% url 'frota:listar_frota' %}" class="btn btn-warning btn-lg w-100">
+                        <i class="bi bi-list-ul"></i> Ver Lista para Editar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção de Estatísticas Rápidas -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="bi bi-graph-up"></i> Resumo da Frota
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="p-3">
+                                <h3 class="text-primary mb-1">{{ total_veiculos }}</h3>
+                                <small class="text-muted">Veículo{{ total_veiculos|pluralize }} Cadastrado{{ total_veiculos|pluralize }}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3">
+                                <h3 class="text-success mb-1">3</h3>
+                                <small class="text-muted">Opções de Cadastro</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3">
+                                <h3 class="text-info mb-1">100%</h3>
+                                <small class="text-muted">Controle Total</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3">
+                                <h3 class="text-warning mb-1">24/7</h3>
+                                <small class="text-muted">Disponibilidade</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navegação Rápida -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 bg-light">
+                <div class="card-body text-center py-3">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle"></i> 
+                        Escolha a opção de cadastro que melhor se adequa às suas necessidades. 
+                        O cadastro automatizado oferece maior precisão com dados padronizados.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-card {
+    transition: all 0.3s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .card-body.p-4 {
+        padding: 1.5rem !important;
+    }
+}
+</style>
+{% endblock %}
+

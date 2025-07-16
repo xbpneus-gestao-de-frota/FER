@@ -13,13 +13,33 @@ from xbpneus.views_redirect import (
     health_check,
     root_redirect
 )
+from xbpneus.core.views_pilares import (
+    central_estoque,
+    central_manutencao,
+    central_eventos,
+    central_noticias,
+    central_relatorios,
+    central_compras,
+    central_financeiro
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     path('painel/', painel_cliente, name='painel_cliente'),
+    
+    # Pilares do Sistema - Telas Centrais
     path('frota/', include('xbpneus.apps.frota.urls')),
+    path('estoque/', central_estoque, name='central_estoque'),
+    path('manutencao/', central_manutencao, name='central_manutencao'),
+    path('eventos/', central_eventos, name='central_eventos'),
+    path('noticias/', central_noticias, name='central_noticias'),
+    path('relatorios/', central_relatorios, name='central_relatorios'),
+    path('compras/', central_compras, name='central_compras'),
+    path('financeiro/', central_financeiro, name='central_financeiro'),
+    
+    # Configurações
     path('painel/configuracoes/', include('xbpneus.apps.configuracoes.urls')),
     
     # Rotas de redirecionamento para integração com site principal

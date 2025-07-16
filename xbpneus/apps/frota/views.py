@@ -333,3 +333,19 @@ def ajax_validar_placa(request):
     
     return JsonResponse({'valida': True, 'mensagem': 'Placa disponível.'})
 
+
+
+@login_required
+def central_frota(request):
+    """Tela central do Pilar Frota com cards de ações principais"""
+    # Estatísticas básicas para exibir nos cards
+    total_veiculos = Veiculo.objects.filter(usuario=request.user).count()
+    
+    context = {
+        'total_veiculos': total_veiculos,
+        'titulo_pilar': 'Frota',
+        'mascote': 'mascotes/frota.webp',
+        'descricao': 'Gerencie sua frota de veículos de forma eficiente',
+    }
+    return render(request, 'frota/central_frota.html', context)
+
