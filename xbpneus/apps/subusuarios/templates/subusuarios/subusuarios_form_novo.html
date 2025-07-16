@@ -1,0 +1,365 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ titulo }} | XBPNEUS{% endblock %}
+
+{% block extra_css %}
+<style>
+.liberacoes-container {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.pilares-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.pilar-item {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    transition: all 0.2s;
+}
+
+.pilar-item:hover {
+    border-color: #0d6efd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.pilar-item.selected {
+    border-color: #0d6efd;
+    background: #e7f3ff;
+}
+
+.controles-selecao {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.senha-container {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2><i class="bi bi-person-plus"></i> {{ titulo }}</h2>
+        <p class="text-muted mb-0">
+            {% if subusuario %}
+                Edite as informações do subusuário
+            {% else %}
+                Cadastre um novo subusuário para sua empresa
+            {% endif %}
+        </p>
+    </div>
+    <a href="{% url 'configuracoes:subusuarios:listar_subusuarios' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            
+            <!-- Informações Básicas -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-badge"></i> Informações Básicas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.nome.id_for_label }}" class="form-label">
+                                {{ form.nome.label }}
+                            </label>
+                            {{ form.nome }}
+                            {% if form.nome.help_text %}
+                                <div class="form-text">{{ form.nome.help_text }}</div>
+                            {% endif %}
+                            {% if form.nome.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.nome.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">
+                                {{ form.email.label }}
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.help_text %}
+                                <div class="form-text">{{ form.email.help_text }}</div>
+                            {% endif %}
+                            {% if form.email.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.email.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.login.id_for_label }}" class="form-label">
+                                {{ form.login.label }}
+                            </label>
+                            {{ form.login }}
+                            {% if form.login.help_text %}
+                                <div class="form-text">{{ form.login.help_text }}</div>
+                            {% endif %}
+                            {% if form.login.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.login.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.funcao.id_for_label }}" class="form-label">
+                                {{ form.funcao.label }}
+                            </label>
+                            {{ form.funcao }}
+                            {% if form.funcao.help_text %}
+                                <div class="form-text">{{ form.funcao.help_text }}</div>
+                            {% endif %}
+                            {% if form.funcao.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.funcao.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div class="form-check">
+                                {{ form.ativo }}
+                                <label class="form-check-label" for="{{ form.ativo.id_for_label }}">
+                                    {{ form.ativo.label }}
+                                </label>
+                                {% if form.ativo.help_text %}
+                                    <div class="form-text">{{ form.ativo.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Autenticação -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-key"></i> Autenticação
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="senha-container">
+                        <div class="form-check mb-3">
+                            {{ form.enviar_convite }}
+                            <label class="form-check-label" for="{{ form.enviar_convite.id_for_label }}">
+                                <strong>{{ form.enviar_convite.label }}</strong>
+                            </label>
+                            {% if form.enviar_convite.help_text %}
+                                <div class="form-text">{{ form.enviar_convite.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div id="campos-senha" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.senha.id_for_label }}" class="form-label">
+                                    {{ form.senha.label }}
+                                </label>
+                                {{ form.senha }}
+                                {% if form.senha.help_text %}
+                                    <div class="form-text">{{ form.senha.help_text }}</div>
+                                {% endif %}
+                                {% if form.senha.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.senha.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.confirmar_senha.id_for_label }}" class="form-label">
+                                    {{ form.confirmar_senha.label }}
+                                </label>
+                                {{ form.confirmar_senha }}
+                                {% if form.confirmar_senha.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.confirmar_senha.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Liberações de Acesso -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-shield-check"></i> Liberações de Acesso aos Pilares
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Perfil de Acesso -->
+                    <div class="mb-3">
+                        <label for="{{ form.perfil_acesso.id_for_label }}" class="form-label">
+                            {{ form.perfil_acesso.label }}
+                        </label>
+                        {{ form.perfil_acesso }}
+                        {% if form.perfil_acesso.help_text %}
+                            <div class="form-text">{{ form.perfil_acesso.help_text }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="liberacoes-container">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="mb-0">Selecione os Pilares:</h6>
+                            <div class="controles-selecao">
+                                <button type="button" class="btn btn-sm btn-outline-primary" id="selecionar-todos">
+                                    <i class="bi bi-check-all"></i> Selecionar Todos
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="desmarcar-todos">
+                                    <i class="bi bi-x-circle"></i> Desmarcar Todos
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="pilares-grid">
+                            {% for choice in form.modulos %}
+                                <div class="pilar-item" data-modulo="{{ choice.choice_value }}">
+                                    <div class="form-check">
+                                        {{ choice.tag }}
+                                        <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                            <strong>{{ choice.choice_label }}</strong>
+                                        </label>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        {% if form.modulos.errors %}
+                            <div class="invalid-feedback d-block mt-2">
+                                {% for error in form.modulos.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Botões de Ação -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'configuracoes:subusuarios:listar_subusuarios' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> 
+                            {% if subusuario %}Atualizar{% else %}Cadastrar{% endif %} Subusuário
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Erros Gerais -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger mt-3">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const enviarConviteCheckbox = document.getElementById('id_enviar_convite');
+    const camposSenha = document.getElementById('campos-senha');
+    const selecionarTodos = document.getElementById('selecionar-todos');
+    const desmarcarTodos = document.getElementById('desmarcar-todos');
+    const perfilAcesso = document.getElementById('id_perfil_acesso');
+    
+    // Controlar exibição dos campos de senha
+    function toggleCamposSenha() {
+        if (enviarConviteCheckbox.checked) {
+            camposSenha.style.display = 'none';
+        } else {
+            camposSenha.style.display = 'block';
+        }
+    }
+    
+    enviarConviteCheckbox.addEventListener('change', toggleCamposSenha);
+    toggleCamposSenha(); // Executar na inicialização
+    
+    // Selecionar/Desmarcar todos os módulos
+    selecionarTodos.addEventListener('click', function() {
+        document.querySelectorAll('.modulo-checkbox').forEach(checkbox => {
+            checkbox.checked = true;
+            updatePilarItem(checkbox);
+        });
+    });
+    
+    desmarcarTodos.addEventListener('click', function() {
+        document.querySelectorAll('.modulo-checkbox').forEach(checkbox => {
+            checkbox.checked = false;
+            updatePilarItem(checkbox);
+        });
+    });
+    
+    // Atualizar visual dos pilares
+    function updatePilarItem(checkbox) {
+        const pilarItem = checkbox.closest('.pilar-item');
+        if (checkbox.checked) {
+            pilarItem.classList.add('selected');
+        } else {
+            pilarItem.classList.remove('selected');
+        }
+    }
+    
+    // Aplicar visual inicial e eventos
+    document.querySelectorAll('.modulo-checkbox').forEach(checkbox => {
+        updatePilarItem(checkbox);
+        checkbox.addEventListener('change', function() {
+            updatePilarItem(this);
+        });
+    });
+    
+    // Aplicar perfil de acesso (simulação - seria implementado via AJAX)
+    perfilAcesso.addEventListener('change', function() {
+        if (this.value) {
+            // Aqui seria feita uma requisição AJAX para buscar os módulos do perfil
+            console.log('Perfil selecionado:', this.value);
+        }
+    });
+});
+</script>
+{% endblock %}
+

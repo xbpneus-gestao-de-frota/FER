@@ -97,6 +97,51 @@
             font-size: 0.9em;
         }
         
+        /* Novo comportamento do menu */
+        .pilar-menu {
+            position: relative;
+        }
+        
+        .pilar-link {
+            display: flex !important;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        
+        .submenu-toggle {
+            transition: transform 0.3s ease;
+            font-size: 0.8em;
+            opacity: 0.6;
+        }
+        
+        .submenu-toggle.rotated {
+            transform: rotate(90deg);
+        }
+        
+        .submenu-items {
+            background: rgba(0,0,0,0.05);
+            border-radius: 0 0 8px 8px;
+            margin-top: 2px;
+        }
+        
+        .submenu-item {
+            display: block;
+            padding: 8px 16px 8px 44px !important;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.9em;
+            border-radius: 4px;
+            margin: 2px 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .submenu-item:hover {
+            background: rgba(0,123,255,0.1);
+            color: #007bff;
+            text-decoration: none;
+        }
+        
         /* Responsividade para mascotes */
         @media (max-width: 768px) {
             .menu-mascote-icon {
@@ -151,84 +196,84 @@
                             Dashboard
                         </a>
                         
-                        <!-- Frota (antigo: Veículos) -->
-                        <div class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="/frota/" id="navbarFrota" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <!-- Frota -->
+                        <div class="nav-item pilar-menu">
+                            <a class="nav-link pilar-link" href="/frota/" data-pilar="frota">
                                 <img src="{% static 'mascotes/frota.webp' %}" alt="Frota" class="menu-mascote-icon">
                                 Frota
+                                <i class="bi bi-chevron-right submenu-toggle ms-auto"></i>
                             </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarFrota">
-                                <li><a class="dropdown-item" href="/frota/"><i class="bi bi-list-ul"></i> Lista da Frota</a></li>
-                                <li><a class="dropdown-item" href="/frota/cadastrar/"><i class="bi bi-plus-circle"></i> Cadastro Simples</a></li>
-                                <li><a class="dropdown-item" href="/frota/cadastrar-automatizado/"><i class="bi bi-magic"></i> Cadastro Automatizado</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/frota/relatorios/"><i class="bi bi-graph-up"></i> Relatórios</a></li>
-                            </ul>
+                            <div class="submenu-items collapse" id="submenu-frota">
+                                <a class="submenu-item" href="/frota/"><i class="bi bi-list-ul"></i> Lista da Frota</a>
+                                <a class="submenu-item" href="/frota/cadastrar/"><i class="bi bi-plus-circle"></i> Cadastro Simples</a>
+                                <a class="submenu-item" href="/frota/cadastrar-automatizado/"><i class="bi bi-magic"></i> Cadastro Automatizado</a>
+                                <a class="submenu-item" href="/frota/relatorios/"><i class="bi bi-graph-up"></i> Relatórios</a>
+                            </div>
                         </div>
                         
-                        <!-- Estoque (antigo: Pneus) -->
-                        <a class="nav-link" href="{% url 'central_estoque' %}">
+                        <!-- Estoque -->
+                        <a class="nav-link pilar-link" href="{% url 'central_estoque' %}">
                             <img src="{% static 'mascotes/estoque.jpg' %}" alt="Estoque" class="menu-mascote-icon">
                             Estoque
                         </a>
                         
                         <!-- Manutenção -->
-                        <a class="nav-link" href="{% url 'central_manutencao' %}">
+                        <a class="nav-link pilar-link" href="{% url 'central_manutencao' %}">
                             <img src="{% static 'mascotes/manutencao.webp' %}" alt="Manutenção" class="menu-mascote-icon">
                             Manutenção
                         </a>
                         
                         <!-- Relatórios -->
-                        <a class="nav-link" href="{% url 'central_relatorios' %}">
+                        <a class="nav-link pilar-link" href="{% url 'central_relatorios' %}">
                             <img src="{% static 'mascotes/relatorios.webp' %}" alt="Relatórios" class="menu-mascote-icon">
                             Relatórios
                         </a>
                         
                         <!-- Financeiro -->
-                        <a class="nav-link" href="{% url 'central_financeiro' %}">
+                        <a class="nav-link pilar-link" href="{% url 'central_financeiro' %}">
                             <img src="{% static 'mascotes/financeiro.webp' %}" alt="Financeiro" class="menu-mascote-icon">
                             Financeiro
                         </a>
                         
                         <!-- Compras -->
-                        <a class="nav-link" href="{% url 'central_compras' %}">
+                        <a class="nav-link pilar-link" href="{% url 'central_compras' %}">
                             <img src="{% static 'mascotes/compras.webp' %}" alt="Compras" class="menu-mascote-icon">
                             Compras
                         </a>
                         
                         <!-- Eventos -->
-                        <a class="nav-link" href="{% url 'central_eventos' %}">
+                        <a class="nav-link pilar-link" href="{% url 'central_eventos' %}">
                             <img src="{% static 'mascotes/eventos.webp' %}" alt="Eventos" class="menu-mascote-icon">
                             Eventos
                         </a>
                         
                         <!-- Notícias -->
-                        <a class="nav-link" href="{% url 'central_noticias' %}">
+                        <a class="nav-link pilar-link" href="{% url 'central_noticias' %}">
                             <img src="{% static 'mascotes/noticias.jpg' %}" alt="Notícias" class="menu-mascote-icon">
                             Notícias
                         </a>
                         
                         <!-- Configurações (10º pilar) -->
-                        <div class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="configuracoesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="nav-item pilar-menu">
+                            <a class="nav-link pilar-link" href="{% url 'configuracoes:dashboard' %}" data-pilar="configuracoes">
                                 <img src="{% static 'mascotes/configuracoes.webp' %}" alt="Configurações" class="menu-mascote-icon">
                                 Configurações
+                                <i class="bi bi-chevron-right submenu-toggle ms-auto"></i>
                             </a>
-                            <ul class="dropdown-menu" aria-labelledby="configuracoesDropdown">
-                                <li><a class="dropdown-item" href="{% url 'configuracoes:dashboard' %}">
+                            <div class="submenu-items collapse" id="submenu-configuracoes">
+                                <a class="submenu-item" href="{% url 'configuracoes:dashboard' %}">
                                     <i class="bi bi-gear"></i> Painel Geral
-                                </a></li>
-                                <li><a class="dropdown-item" href="{% url 'configuracoes:empresa' %}">
+                                </a>
+                                <a class="submenu-item" href="{% url 'configuracoes:empresa' %}">
                                     <i class="bi bi-building"></i> Empresa
-                                </a></li>
-                                <li><a class="dropdown-item" href="{% url 'configuracoes:preferencias' %}">
+                                </a>
+                                <a class="submenu-item" href="{% url 'configuracoes:preferencias' %}">
                                     <i class="bi bi-sliders"></i> Preferências
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'configuracoes:subusuarios:listar_subusuarios' %}">
+                                </a>
+                                <a class="submenu-item" href="{% url 'configuracoes:subusuarios:listar_subusuarios' %}">
                                     <i class="bi bi-people"></i> Subusuários
-                                </a></li>
-                            </ul>
+                                </a>
+                            </div>
                         </div>
                     </nav>
                 </div>
@@ -268,6 +313,80 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Menu Behavior Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Comportamento do menu lateral dos pilares
+            const pilarMenus = document.querySelectorAll('.pilar-menu');
+            
+            pilarMenus.forEach(menu => {
+                const link = menu.querySelector('.pilar-link');
+                const submenuItems = menu.querySelector('.submenu-items');
+                const toggle = menu.querySelector('.submenu-toggle');
+                
+                if (link && submenuItems && toggle) {
+                    // Clique no link principal - navega para tela central
+                    link.addEventListener('click', function(e) {
+                        // Se clicou no toggle, não navegar
+                        if (e.target.classList.contains('submenu-toggle') || 
+                            e.target.closest('.submenu-toggle')) {
+                            e.preventDefault();
+                            toggleSubmenu();
+                            return;
+                        }
+                        
+                        // Navegar para a tela central (comportamento padrão do link)
+                        // O href do link já está configurado corretamente
+                    });
+                    
+                    // Clique no toggle - mostrar/ocultar submenu
+                    toggle.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleSubmenu();
+                    });
+                    
+                    function toggleSubmenu() {
+                        const isExpanded = submenuItems.classList.contains('show');
+                        
+                        // Fechar todos os outros submenus
+                        document.querySelectorAll('.submenu-items.show').forEach(item => {
+                            if (item !== submenuItems) {
+                                item.classList.remove('show');
+                                const otherToggle = item.parentElement.querySelector('.submenu-toggle');
+                                if (otherToggle) {
+                                    otherToggle.classList.remove('rotated');
+                                }
+                            }
+                        });
+                        
+                        // Toggle do submenu atual
+                        if (isExpanded) {
+                            submenuItems.classList.remove('show');
+                            toggle.classList.remove('rotated');
+                        } else {
+                            submenuItems.classList.add('show');
+                            toggle.classList.add('rotated');
+                        }
+                    }
+                }
+            });
+            
+            // Fechar submenus ao clicar fora
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.pilar-menu')) {
+                    document.querySelectorAll('.submenu-items.show').forEach(item => {
+                        item.classList.remove('show');
+                        const toggle = item.parentElement.querySelector('.submenu-toggle');
+                        if (toggle) {
+                            toggle.classList.remove('rotated');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 

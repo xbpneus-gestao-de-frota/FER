@@ -134,3 +134,19 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
 ]
 
+
+
+# Email Settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'noreply@xbpneus.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = 'XBPNEUS Sistema <noreply@xbpneus.com>'
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+# Para desenvolvimento, usar console backend se não houver configuração de e-mail
+if not EMAIL_HOST_PASSWORD and DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+

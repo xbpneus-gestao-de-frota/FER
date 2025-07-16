@@ -14,25 +14,28 @@ urlpatterns = [
     # Edição
     path('<int:subusuario_id>/editar/', views.editar_subusuario, name='editar_subusuario'),
     
-    # Detalhes
-    path('<int:subusuario_id>/', views.detalhes_subusuario, name='detalhes_subusuario'),
-    
     # Exclusão
     path('<int:subusuario_id>/excluir/', views.excluir_subusuario, name='excluir_subusuario'),
     
     # Alternar status (AJAX)
     path('<int:subusuario_id>/toggle-ativo/', views.toggle_ativo_subusuario, name='toggle_ativo_subusuario'),
     
-    # === MÓDULOS DE ACESSO ===
-    path('modulos/', views.listar_modulos, name='listar_modulos'),
-    path('modulos/novo/', views.cadastrar_modulo, name='cadastrar_modulo'),
+    # === FLUXO DE CONVITE ===
+    # Enviar convite por e-mail
+    path('<int:subusuario_id>/enviar-convite/', views.enviar_convite, name='enviar_convite'),
     
-    # === PERFIS DE ACESSO ===
-    path('perfis/', views.listar_perfis, name='listar_perfis'),
-    path('perfis/novo/', views.cadastrar_perfil, name='cadastrar_perfil'),
-    path('perfis/<int:perfil_id>/editar/', views.editar_perfil, name='editar_perfil'),
+    # Reenviar convite
+    path('<int:subusuario_id>/reenviar-convite/', views.reenviar_convite, name='reenviar_convite'),
     
-    # === APIs AJAX ===
-    path('api/perfil/<int:perfil_id>/modulos/', views.api_perfil_modulos, name='api_perfil_modulos'),
+    # Definir senha (acesso público via token)
+    path('definir-senha/<uuid:token>/', views.definir_senha, name='definir_senha'),
+    
+    # === AJAX ENDPOINTS ===
+    # Módulos de perfil
+    path('ajax/perfil/<int:perfil_id>/modulos/', views.ajax_modulos_perfil, name='ajax_modulos_perfil'),
+    
+    # Validações
+    path('ajax/validar-login/', views.ajax_validar_login, name='ajax_validar_login'),
+    path('ajax/validar-email/', views.ajax_validar_email, name='ajax_validar_email'),
 ]
 
