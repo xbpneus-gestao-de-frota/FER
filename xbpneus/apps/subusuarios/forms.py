@@ -33,7 +33,7 @@ class SubUsuarioForm(forms.ModelForm):
         label="Enviar convite por e-mail",
         help_text="Marque para enviar um convite para o subusuário definir sua própria senha",
         required=False,
-        initial=True
+        initial=False  # Mudando para False para mostrar campos de senha por padrão
     )
     
     # Liberações de acesso com interface melhorada
@@ -147,6 +147,13 @@ class SubUsuarioForm(forms.ModelForm):
             )
         
         return email
+    
+    def clean_modulos(self):
+        """Validar que pelo menos um módulo seja selecionado"""
+        modulos = self.cleaned_data.get('modulos')
+        if not modulos or modulos.count() == 0:
+            raise forms.ValidationError("Selecione pelo menos um pilar de acesso.")
+        return modulos
     
     def clean(self):
         cleaned_data = super().clean()

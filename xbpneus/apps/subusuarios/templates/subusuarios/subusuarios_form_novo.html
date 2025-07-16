@@ -183,7 +183,7 @@
                         </div>
                     </div>
                     
-                    <div id="campos-senha" style="display: none;">
+                    <div id="campos-senha">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="{{ form.senha.id_for_label }}" class="form-label">
@@ -211,6 +211,13 @@
                                     </div>
                                 {% endif %}
                             </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Opções de autenticação:</strong><br>
+                            • <strong>Definir senha agora:</strong> Preencha os campos acima<br>
+                            • <strong>Enviar convite:</strong> Marque a opção abaixo para o subusuário definir a própria senha
                         </div>
                     </div>
                 </div>
@@ -382,10 +389,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Controlar exibição dos campos de senha
     function toggleCamposSenha() {
+        // Campos de senha sempre visíveis - usuário pode escolher entre definir senha ou enviar convite
+        camposSenha.style.display = 'block';
+        
+        // Opcional: adicionar feedback visual sobre a opção escolhida
+        const senhaInputs = camposSenha.querySelectorAll('input[type="password"]');
         if (enviarConviteCheckbox.checked) {
-            camposSenha.style.display = 'none';
+            senhaInputs.forEach(input => {
+                input.style.opacity = '0.6';
+                input.placeholder = 'Não necessário - convite será enviado';
+            });
         } else {
-            camposSenha.style.display = 'block';
+            senhaInputs.forEach(input => {
+                input.style.opacity = '1';
+                input.placeholder = input.getAttribute('data-original-placeholder') || '';
+            });
         }
     }
     
