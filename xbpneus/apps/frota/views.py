@@ -48,7 +48,7 @@ def cadastrar_veiculo(request):
             veiculo.usuario = request.user
             veiculo.save()
             messages.success(request, 'Veículo cadastrado com sucesso!')
-            return redirect('frota:listar_veiculos')
+            return redirect('frota:listar_frota')
     else:
         form = VeiculoForm()
     
@@ -64,7 +64,7 @@ def editar_veiculo(request, veiculo_id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Veículo atualizado com sucesso!')
-            return redirect('frota:listar_veiculos')
+            return redirect('frota:listar_frota')
     else:
         form = VeiculoForm(instance=veiculo)
     
@@ -104,7 +104,7 @@ def cadastrar_pneu(request, veiculo_id=None):
         if form.is_valid():
             pneu = form.save()
             messages.success(request, 'Pneu cadastrado com sucesso!')
-            return redirect('frota:detalhes_veiculo', veiculo_id=pneu.veiculo.id)
+            return redirect('frota:detalhes_frota', veiculo_id=pneu.veiculo.id)
     else:
         form = PneuForm(usuario=request.user, initial={'veiculo': veiculo} if veiculo else None)
     
@@ -124,7 +124,7 @@ def editar_pneu(request, pneu_id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Pneu atualizado com sucesso!')
-            return redirect('frota:detalhes_veiculo', veiculo_id=pneu.veiculo.id)
+            return redirect('frota:detalhes_frota', veiculo_id=pneu.veiculo.id)
     else:
         form = PneuForm(instance=pneu, usuario=request.user)
     
