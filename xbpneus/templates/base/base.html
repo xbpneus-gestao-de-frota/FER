@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -69,6 +70,45 @@
             border: none;
             border-radius: 12px;
         }
+        
+        /* Estilos para mascotes do menu */
+        .menu-mascote-icon {
+            width: 32px;
+            height: 32px;
+            margin-right: 12px;
+            vertical-align: middle;
+            border-radius: 6px;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+        
+        .nav-link:hover .menu-mascote-icon {
+            transform: scale(1.1);
+        }
+        
+        .submenu-item {
+            padding-left: 44px !important;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .submenu-icon {
+            margin-right: 8px;
+            font-size: 0.9em;
+        }
+        
+        /* Responsividade para mascotes */
+        @media (max-width: 768px) {
+            .menu-mascote-icon {
+                width: 28px;
+                height: 28px;
+                margin-right: 8px;
+            }
+            
+            .submenu-item {
+                padding-left: 36px !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -105,21 +145,71 @@
                 <!-- Sidebar -->
                 <div class="col-md-3 col-lg-2 sidebar p-3">
                     <nav class="nav flex-column">
+                        <!-- Dashboard -->
                         <a class="nav-link active" href="/painel/">
-                            <i class="bi bi-speedometer2"></i> Dashboard
+                            <img src="{% static 'mascotes/dashboard.jpg' %}" alt="Dashboard" class="menu-mascote-icon">
+                            Dashboard
                         </a>
+                        
+                        <!-- Frota -->
                         <a class="nav-link" href="/frota/">
-                            <i class="bi bi-truck"></i> Frota
+                            <img src="{% static 'mascotes/frota.webp' %}" alt="Frota" class="menu-mascote-icon">
+                            Frota
                         </a>
-                        <a class="nav-link" href="/frota/veiculos/">
-                            <i class="bi bi-car-front"></i> Veículos
+                        
+                        <!-- Veículos (submenu da Frota) -->
+                        <a class="nav-link submenu-item" href="/frota/veiculos/">
+                            <i class="bi bi-car-front submenu-icon"></i> Veículos
                         </a>
-                        <a class="nav-link" href="/frota/pneus/">
-                            <i class="bi bi-circle"></i> Pneus
+                        
+                        <!-- Pneus (submenu da Frota) -->
+                        <a class="nav-link submenu-item" href="/frota/pneus/">
+                            <i class="bi bi-circle submenu-icon"></i> Pneus
                         </a>
+                        
+                        <!-- Estoque -->
+                        <a class="nav-link" href="/frota/estoque/">
+                            <img src="{% static 'mascotes/estoque.jpg' %}" alt="Estoque" class="menu-mascote-icon">
+                            Estoque
+                        </a>
+                        
+                        <!-- Manutenção -->
+                        <a class="nav-link" href="/manutencao/">
+                            <img src="{% static 'mascotes/manutencao.webp' %}" alt="Manutenção" class="menu-mascote-icon">
+                            Manutenção
+                        </a>
+                        
+                        <!-- Relatórios -->
                         <a class="nav-link" href="/frota/relatorios/">
-                            <i class="bi bi-graph-up"></i> Relatórios
+                            <img src="{% static 'mascotes/relatorios.webp' %}" alt="Relatórios" class="menu-mascote-icon">
+                            Relatórios
                         </a>
+                        
+                        <!-- Financeiro -->
+                        <a class="nav-link" href="/financeiro/">
+                            <img src="{% static 'mascotes/financeiro.webp' %}" alt="Financeiro" class="menu-mascote-icon">
+                            Financeiro
+                        </a>
+                        
+                        <!-- Compras -->
+                        <a class="nav-link" href="/compras/">
+                            <img src="{% static 'mascotes/compras.webp' %}" alt="Compras" class="menu-mascote-icon">
+                            Compras
+                        </a>
+                        
+                        <!-- Eventos -->
+                        <a class="nav-link" href="/eventos/">
+                            <img src="{% static 'mascotes/eventos.webp' %}" alt="Eventos" class="menu-mascote-icon">
+                            Eventos
+                        </a>
+                        
+                        <!-- Notícias -->
+                        <a class="nav-link" href="/noticias/">
+                            <img src="{% static 'mascotes/noticias.jpg' %}" alt="Notícias" class="menu-mascote-icon">
+                            Notícias
+                        </a>
+                        
+                        <!-- Subusuários (Configurações) -->
                         <a class="nav-link" href="{% url 'subusuarios:listar_subusuarios' %}">
                             <i class="bi bi-people"></i> Subusuários
                         </a>
