@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password, check_password
+import uuid
 
 
 class ModuloAcesso(models.Model):
@@ -33,6 +35,12 @@ class SubUsuario(models.Model):
     
     nome = models.CharField(max_length=100, verbose_name='Nome Completo')
     email = models.EmailField(verbose_name='E-mail')
+    login = models.CharField(max_length=50, verbose_name='Login/Usuário', help_text='Nome de usuário para acesso ao sistema')
+    senha = models.CharField(max_length=128, verbose_name='Senha', blank=True, null=True)
+    token_convite = models.UUIDField(default=uuid.uuid4, unique=True, verbose_name='Token de Convite')
+    convite_enviado = models.BooleanField(default=False, verbose_name='Convite Enviado')
+    senha_definida = models.BooleanField(default=False, verbose_name='Senha Definida')
+    primeiro_acesso = models.BooleanField(default=True, verbose_name='Primeiro Acesso')
     funcao = models.CharField(
         max_length=20, 
         choices=FUNCAO_CHOICES, 
@@ -58,10 +66,31 @@ class SubUsuario(models.Model):
         verbose_name = 'Subusuário'
         verbose_name_plural = 'Subusuários'
         ordering = ['nome']
-        unique_together = ['email', 'usuario_principal']  # Email único por usuário principal
+        unique_together = [
+            ['email', 'usuario_principal'],  # Email único por usuário principal
+            ['login', 'usuario_principal']   # Login único por usuário principal
+        ]
     
     def __str__(self):
         return f"{self.nome} ({self.get_funcao_display()})"
+    
+    def set_senha(self, senha_raw):
+        """Define a senha do subusuário"""
+        self.senha = make_password(senha_raw)
+        self.senha_definida = True
+        self.primeiro_acesso = False
+    
+    def check_senha(self, senha_raw):
+        """Verifica se a senha está correta"""
+        if not self.senha:
+            return False
+        return check_password(senha_raw, self.senha)
+    
+    def gerar_novo_token_convite(self):
+        """Gera um novo token de convite"""
+        self.token_convite = uuid.uuid4()
+        self.convite_enviado = False
+        return self.token_convite
     
     def get_funcao_display_badge(self):
         """Retorna a função com classe CSS para badge"""

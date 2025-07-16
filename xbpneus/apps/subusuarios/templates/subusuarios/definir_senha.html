@@ -1,0 +1,312 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Definir Senha | XBPNEUS{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.auth-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    padding: 2rem;
+    width: 100%;
+    max-width: 500px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-logo {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #0d6efd;
+    margin-bottom: 0.5rem;
+}
+
+.user-info {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border-left: 4px solid #0d6efd;
+}
+
+.password-requirements {
+    background: #e7f3ff;
+    border: 1px solid #b3d7ff;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.password-requirements ul {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.btn-definir {
+    background: linear-gradient(45deg, #0d6efd, #0b5ed7);
+    border: none;
+    padding: 12px 30px;
+    font-weight: bold;
+    border-radius: 8px;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.btn-definir:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+}
+
+.alert-custom {
+    border-radius: 10px;
+    border: none;
+    padding: 1rem 1.5rem;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    padding: 12px 15px;
+    transition: all 0.3s;
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.password-strength {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.strength-weak { color: #dc3545; }
+.strength-medium { color: #fd7e14; }
+.strength-strong { color: #198754; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">🚛 XBPNEUS</div>
+            <h3>Definir Senha de Acesso</h3>
+            <p class="text-muted">Complete seu cadastro definindo uma senha segura</p>
+        </div>
+
+        {% if subusuario %}
+            <div class="user-info">
+                <h5><i class="bi bi-person-check"></i> Bem-vindo(a)!</h5>
+                <p class="mb-2"><strong>Nome:</strong> {{ subusuario.nome }}</p>
+                <p class="mb-2"><strong>E-mail:</strong> {{ subusuario.email }}</p>
+                <p class="mb-2"><strong>Login:</strong> {{ subusuario.login }}</p>
+                <p class="mb-0"><strong>Função:</strong> {{ subusuario.get_funcao_display }}</p>
+            </div>
+
+            <form method="post" id="form-definir-senha">
+                {% csrf_token %}
+                
+                <div class="password-requirements">
+                    <h6><i class="bi bi-shield-check"></i> Requisitos da Senha:</h6>
+                    <ul>
+                        <li>Mínimo de 8 caracteres</li>
+                        <li>Pelo menos uma letra maiúscula</li>
+                        <li>Pelo menos uma letra minúscula</li>
+                        <li>Pelo menos um número</li>
+                        <li>Pelo menos um caractere especial (!@#$%^&*)</li>
+                    </ul>
+                </div>
+
+                <div class="mb-3">
+                    <label for="senha" class="form-label">Nova Senha *</label>
+                    <input type="password" class="form-control" id="senha" name="senha" required>
+                    <div class="password-strength" id="password-strength"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="confirmar_senha" class="form-label">Confirmar Senha *</label>
+                    <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" required>
+                    <div class="invalid-feedback" id="password-match-feedback"></div>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="aceitar_termos" required>
+                    <label class="form-check-label" for="aceitar_termos">
+                        Aceito os <a href="#" target="_blank">termos de uso</a> e <a href="#" target="_blank">política de privacidade</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-definir" id="btn-submit" disabled>
+                    <i class="bi bi-key"></i> Definir Senha e Acessar Sistema
+                </button>
+            </form>
+
+            <div class="text-center mt-3">
+                <small class="text-muted">
+                    Após definir sua senha, você será redirecionado para o sistema
+                </small>
+            </div>
+        {% else %}
+            <div class="alert alert-danger alert-custom">
+                <h5><i class="bi bi-exclamation-triangle"></i> Token Inválido</h5>
+                <p class="mb-0">
+                    O link de convite é inválido ou expirou. Entre em contato com o administrador 
+                    para solicitar um novo convite.
+                </p>
+            </div>
+            
+            <div class="text-center">
+                <a href="/" class="btn btn-outline-primary">
+                    <i class="bi bi-house"></i> Voltar ao Início
+                </a>
+            </div>
+        {% endif %}
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-custom mt-3">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const senhaInput = document.getElementById('senha');
+    const confirmarSenhaInput = document.getElementById('confirmar_senha');
+    const strengthDiv = document.getElementById('password-strength');
+    const matchFeedback = document.getElementById('password-match-feedback');
+    const btnSubmit = document.getElementById('btn-submit');
+    const aceitarTermos = document.getElementById('aceitar_termos');
+
+    // Verificar força da senha
+    function checkPasswordStrength(password) {
+        let score = 0;
+        let feedback = [];
+
+        if (password.length >= 8) score++;
+        else feedback.push('Mínimo 8 caracteres');
+
+        if (/[a-z]/.test(password)) score++;
+        else feedback.push('Letra minúscula');
+
+        if (/[A-Z]/.test(password)) score++;
+        else feedback.push('Letra maiúscula');
+
+        if (/[0-9]/.test(password)) score++;
+        else feedback.push('Número');
+
+        if (/[^A-Za-z0-9]/.test(password)) score++;
+        else feedback.push('Caractere especial');
+
+        return { score, feedback };
+    }
+
+    // Atualizar indicador de força
+    function updatePasswordStrength() {
+        const password = senhaInput.value;
+        const { score, feedback } = checkPasswordStrength(password);
+
+        if (password.length === 0) {
+            strengthDiv.innerHTML = '';
+            return false;
+        }
+
+        let strengthText = '';
+        let strengthClass = '';
+
+        if (score < 3) {
+            strengthText = 'Fraca';
+            strengthClass = 'strength-weak';
+        } else if (score < 5) {
+            strengthText = 'Média';
+            strengthClass = 'strength-medium';
+        } else {
+            strengthText = 'Forte';
+            strengthClass = 'strength-strong';
+        }
+
+        strengthDiv.innerHTML = `
+            <span class="${strengthClass}">
+                <i class="bi bi-shield-${score >= 5 ? 'check' : score >= 3 ? 'exclamation' : 'x'}"></i>
+                Força: ${strengthText}
+            </span>
+            ${feedback.length > 0 ? `<br><small>Faltam: ${feedback.join(', ')}</small>` : ''}
+        `;
+
+        return score >= 5;
+    }
+
+    // Verificar se senhas coincidem
+    function checkPasswordMatch() {
+        const senha = senhaInput.value;
+        const confirmarSenha = confirmarSenhaInput.value;
+
+        if (confirmarSenha.length === 0) {
+            confirmarSenhaInput.classList.remove('is-valid', 'is-invalid');
+            matchFeedback.textContent = '';
+            return false;
+        }
+
+        if (senha === confirmarSenha) {
+            confirmarSenhaInput.classList.remove('is-invalid');
+            confirmarSenhaInput.classList.add('is-valid');
+            matchFeedback.textContent = '';
+            return true;
+        } else {
+            confirmarSenhaInput.classList.remove('is-valid');
+            confirmarSenhaInput.classList.add('is-invalid');
+            matchFeedback.textContent = 'As senhas não coincidem';
+            return false;
+        }
+    }
+
+    // Validar formulário
+    function validateForm() {
+        const strongPassword = updatePasswordStrength();
+        const passwordMatch = checkPasswordMatch();
+        const termsAccepted = aceitarTermos.checked;
+
+        btnSubmit.disabled = !(strongPassword && passwordMatch && termsAccepted);
+    }
+
+    // Event listeners
+    senhaInput.addEventListener('input', validateForm);
+    confirmarSenhaInput.addEventListener('input', validateForm);
+    aceitarTermos.addEventListener('change', validateForm);
+
+    // Validação inicial
+    validateForm();
+
+    // Submissão do formulário
+    document.getElementById('form-definir-senha').addEventListener('submit', function(e) {
+        if (btnSubmit.disabled) {
+            e.preventDefault();
+            return false;
+        }
+
+        btnSubmit.innerHTML = '<i class="bi bi-hourglass-split"></i> Definindo senha...';
+        btnSubmit.disabled = true;
+    });
+});
+</script>
+{% endblock %}
+

@@ -4,8 +4,12 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.db.models import Q, Count
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+from django.views.decorators.csrf import csrf_exempt
 from .models import SubUsuario, ModuloAcesso, PerfilAcesso
 from .forms import SubUsuarioForm, PerfilAcessoForm, ModuloAcessoForm, FiltroSubUsuarioForm
+from .utils import enviar_convite_subusuario, reenviar_convite_subusuario, validar_token_convite, definir_senha_subusuario
 
 
 @login_required
@@ -46,10 +50,27 @@ def cadastrar_subusuario(request):
         form = SubUsuarioForm(request.POST, usuario_principal=request.user)
         if form.is_valid():
             subusuario = form.save()
-            messages.success(
-                request, 
-                f'Subusuário "{subusuario.nome}" cadastrado com sucesso!'
-            )
+            
+            # Verificar se deve enviar convite
+            if form.cleaned_data.get('enviar_convite'):
+                if enviar_convite_subusuario(subusuario, request):
+                    messages.success(
+                        request, 
+                        f'Subusuário "{subusuario.nome}" cadastrado com sucesso! '
+                        f'Convite enviado para {subusuario.email}.'
+                    )
+                else:
+                    messages.warning(
+                        request, 
+                        f'Subusuário "{subusuario.nome}" cadastrado, mas houve erro ao enviar o convite. '
+                        f'Você pode reenviar o convite na listagem.'
+                    )
+            else:
+                messages.success(
+                    request, 
+                    f'Subusuário "{subusuario.nome}" cadastrado com sucesso!'
+                )
+            
             return redirect('configuracoes:subusuarios:listar_subusuarios')
     else:
         form = SubUsuarioForm(usuario_principal=request.user)
@@ -60,7 +81,7 @@ def cadastrar_subusuario(request):
         'botao_texto': 'Cadastrar',
         'perfis_acesso': PerfilAcesso.objects.filter(ativo=True),
     }
-    return render(request, 'subusuarios/subusuarios_form.html', context)
+    return render(request, 'subusuarios/subusuarios_form_novo.html', context)
 
 
 @login_required
@@ -95,7 +116,7 @@ def editar_subusuario(request, subusuario_id):
         'botao_texto': 'Atualizar',
         'perfis_acesso': PerfilAcesso.objects.filter(ativo=True),
     }
-    return render(request, 'subusuarios/subusuarios_form.html', context)
+    return render(request, 'subusuarios/subusuarios_form_novo.html', context)
 
 
 @login_required
@@ -281,4 +302,121 @@ def get_user_modules(user):
     else:
         # Usuário principal tem acesso a todos os módulos
         return ModuloAcesso.objects.filter(ativo=True).order_by('ordem', 'nome')
+
+
+
+
+# ===== VIEWS PARA FLUXO DE CONVITE POR E-MAIL =====
+
+def definir_senha_view(request, token):
+    """View para subusuário definir senha via token de convite"""
+    subusuario = validar_token_convite(token)
+    
+    if request.method == 'POST' and subusuario:
+        senha = request.POST.get('senha')
+        confirmar_senha = request.POST.get('confirmar_senha')
+        
+        # Validações
+        if not senha or not confirmar_senha:
+            messages.error(request, 'Todos os campos são obrigatórios.')
+        elif senha != confirmar_senha:
+            messages.error(request, 'As senhas não coincidem.')
+        else:
+            try:
+                # Validar força da senha
+                validate_password(senha)
+                
+                # Definir senha
+                if definir_senha_subusuario(subusuario, senha):
+                    messages.success(
+                        request, 
+                        'Senha definida com sucesso! Você já pode acessar o sistema.'
+                    )
+                    # Redirecionar para login ou dashboard
+                    return redirect('/')  # Ajustar conforme necessário
+                else:
+                    messages.error(request, 'Erro ao definir senha. Tente novamente.')
+                    
+            except ValidationError as e:
+                for error in e.messages:
+                    messages.error(request, error)
+    
+    context = {
+        'subusuario': subusuario,
+        'token': token,
+    }
+    return render(request, 'subusuarios/definir_senha.html', context)
+
+
+@login_required
+@require_POST
+def reenviar_convite_view(request, subusuario_id):
+    """Reenvia convite para subusuário"""
+    subusuario = get_object_or_404(
+        SubUsuario, 
+        id=subusuario_id, 
+        usuario_principal=request.user
+    )
+    
+    if reenviar_convite_subusuario(subusuario, request):
+        messages.success(
+            request, 
+            f'Convite reenviado com sucesso para {subusuario.email}!'
+        )
+    else:
+        messages.error(
+            request, 
+            f'Erro ao reenviar convite para {subusuario.email}. Tente novamente.'
+        )
+    
+    return redirect('configuracoes:subusuarios:listar_subusuarios')
+
+
+@login_required
+def status_convite_view(request, subusuario_id):
+    """Retorna status do convite via AJAX"""
+    subusuario = get_object_or_404(
+        SubUsuario, 
+        id=subusuario_id, 
+        usuario_principal=request.user
+    )
+    
+    return JsonResponse({
+        'convite_enviado': subusuario.convite_enviado,
+        'senha_definida': subusuario.senha_definida,
+        'primeiro_acesso': subusuario.primeiro_acesso,
+        'ativo': subusuario.ativo,
+        'email': subusuario.email,
+        'data_criacao': subusuario.data_criacao.isoformat(),
+    })
+
+
+@login_required
+@require_POST
+def enviar_convite_view(request, subusuario_id):
+    """Envia convite para subusuário que ainda não recebeu"""
+    subusuario = get_object_or_404(
+        SubUsuario, 
+        id=subusuario_id, 
+        usuario_principal=request.user
+    )
+    
+    if subusuario.senha_definida:
+        messages.warning(
+            request, 
+            f'{subusuario.nome} já definiu sua senha e pode acessar o sistema.'
+        )
+    else:
+        if enviar_convite_subusuario(subusuario, request):
+            messages.success(
+                request, 
+                f'Convite enviado com sucesso para {subusuario.email}!'
+            )
+        else:
+            messages.error(
+                request, 
+                f'Erro ao enviar convite para {subusuario.email}. Tente novamente.'
+            )
+    
+    return redirect('configuracoes:subusuarios:listar_subusuarios')
 

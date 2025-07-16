@@ -152,19 +152,10 @@
                         </a>
                         
                         <!-- Frota (antigo: Veículos) -->
-                        <div class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="/frota/" id="navbarFrota" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="{% static 'mascotes/frota.webp' %}" alt="Frota" class="menu-mascote-icon">
-                                Frota
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarFrota">
-                                <li><a class="dropdown-item" href="/frota/"><i class="bi bi-list-ul"></i> Lista da Frota</a></li>
-                                <li><a class="dropdown-item" href="/frota/cadastrar/"><i class="bi bi-plus-circle"></i> Cadastro Simples</a></li>
-                                <li><a class="dropdown-item" href="/frota/cadastrar-automatizado/"><i class="bi bi-magic"></i> Cadastro Automatizado</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/frota/relatorios/"><i class="bi bi-graph-up"></i> Relatórios</a></li>
-                            </ul>
-                        </div>
+                        <a class="nav-link" href="/frota/">
+                            <img src="{% static 'mascotes/frota.webp' %}" alt="Frota" class="menu-mascote-icon">
+                            Frota
+                        </a>
                         
                         <!-- Estoque (antigo: Pneus) -->
                         <a class="nav-link" href="{% url 'central_estoque' %}">
@@ -209,27 +200,10 @@
                         </a>
                         
                         <!-- Configurações (10º pilar) -->
-                        <div class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="configuracoesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="{% static 'mascotes/configuracoes.webp' %}" alt="Configurações" class="menu-mascote-icon">
-                                Configurações
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="configuracoesDropdown">
-                                <li><a class="dropdown-item" href="{% url 'configuracoes:dashboard' %}">
-                                    <i class="bi bi-gear"></i> Painel Geral
-                                </a></li>
-                                <li><a class="dropdown-item" href="{% url 'configuracoes:empresa' %}">
-                                    <i class="bi bi-building"></i> Empresa
-                                </a></li>
-                                <li><a class="dropdown-item" href="{% url 'configuracoes:preferencias' %}">
-                                    <i class="bi bi-sliders"></i> Preferências
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'configuracoes:subusuarios:listar_subusuarios' %}">
-                                    <i class="bi bi-people"></i> Subusuários
-                                </a></li>
-                            </ul>
-                        </div>
+                        <a class="nav-link" href="{% url 'configuracoes:dashboard' %}">
+                            <img src="{% static 'mascotes/configuracoes.webp' %}" alt="Configurações" class="menu-mascote-icon">
+                            Configurações
+                        </a>
                     </nav>
                 </div>
                 

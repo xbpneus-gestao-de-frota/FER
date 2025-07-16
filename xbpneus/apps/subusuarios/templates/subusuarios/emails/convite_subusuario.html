@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convite para acessar o sistema XBPNEUS</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #0d6efd;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0d6efd;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #6c757d;
+            font-size: 16px;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .highlight {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #0d6efd;
+            margin: 20px 0;
+        }
+        .btn {
+            display: inline-block;
+            background: #0d6efd;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .btn:hover {
+            background: #0b5ed7;
+        }
+        .info-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🚛 XBPNEUS</div>
+            <div class="subtitle">Sistema de Gestão de Frota e Pneus</div>
+        </div>
+        
+        <div class="content">
+            <h2>Olá, {{ subusuario.nome }}!</h2>
+            
+            <p>Você foi convidado por <strong>{{ usuario_principal.get_full_name|default:usuario_principal.username }}</strong> para acessar o sistema XBPNEUS como subusuário.</p>
+            
+            <div class="highlight">
+                <h3>📋 Seus dados de acesso:</h3>
+                <div class="info-box">
+                    <strong>Nome:</strong> {{ subusuario.nome }}<br>
+                    <strong>E-mail:</strong> {{ subusuario.email }}<br>
+                    <strong>Login:</strong> {{ subusuario.login }}<br>
+                    <strong>Função:</strong> {{ subusuario.get_funcao_display }}
+                </div>
+            </div>
+            
+            <p>Para começar a usar o sistema, você precisa definir sua senha de acesso. Clique no botão abaixo:</p>
+            
+            <div style="text-align: center;">
+                <a href="{{ url_definir_senha }}" class="btn">
+                    🔐 Definir Minha Senha
+                </a>
+            </div>
+            
+            <div class="warning">
+                <strong>⚠️ Importante:</strong>
+                <ul>
+                    <li>Este link é válido por 7 dias</li>
+                    <li>Use apenas você - não compartilhe este e-mail</li>
+                    <li>Após definir a senha, você poderá acessar o sistema normalmente</li>
+                </ul>
+            </div>
+            
+            <h3>🎯 Suas permissões de acesso:</h3>
+            <div class="info-box">
+                {% if subusuario.modulos.exists %}
+                    <p>Você terá acesso aos seguintes módulos:</p>
+                    <ul>
+                        {% for modulo in subusuario.modulos.all %}
+                            <li><strong>{{ modulo.nome }}</strong> - {{ modulo.descricao|default:"Módulo do sistema" }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Suas permissões serão configuradas pelo administrador.</p>
+                {% endif %}
+            </div>
+            
+            <h3>🚀 Próximos passos:</h3>
+            <ol>
+                <li>Clique no botão "Definir Minha Senha" acima</li>
+                <li>Crie uma senha segura (mínimo 8 caracteres)</li>
+                <li>Faça login no sistema com seu usuário e senha</li>
+                <li>Explore as funcionalidades disponíveis</li>
+            </ol>
+            
+            <p>Se você tiver alguma dúvida ou problema, entre em contato com <strong>{{ usuario_principal.get_full_name|default:usuario_principal.username }}</strong> ou com o suporte técnico.</p>
+        </div>
+        
+        <div class="footer">
+            <p>
+                <strong>XBPNEUS - Sistema de Gestão de Frota</strong><br>
+                Este é um e-mail automático, não responda.<br>
+                <a href="{{ site_url }}">Acessar o sistema</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+
