@@ -199,10 +199,28 @@
                             Notícias
                         </a>
                         
-                        <!-- Subusuários (Configurações) -->
-                        <a class="nav-link" href="{% url 'subusuarios:listar_subusuarios' %}">
-                            <i class="bi bi-people"></i> Subusuários
-                        </a>
+                        <!-- Configurações (10º pilar) -->
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="configuracoesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{% static 'mascotes/configuracoes.webp' %}" alt="Configurações" class="menu-mascote-icon">
+                                Configurações
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="configuracoesDropdown">
+                                <li><a class="dropdown-item" href="{% url 'configuracoes:dashboard' %}">
+                                    <i class="bi bi-gear"></i> Painel Geral
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'configuracoes:empresa' %}">
+                                    <i class="bi bi-building"></i> Empresa
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'configuracoes:preferencias' %}">
+                                    <i class="bi bi-sliders"></i> Preferências
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'subusuarios:listar_subusuarios' %}">
+                                    <i class="bi bi-people"></i> Subusuários
+                                </a></li>
+                            </ul>
+                        </div>
                     </nav>
                 </div>
                 

@@ -8,7 +8,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write('Criando módulos de acesso...')
         
-        # Módulos principais (9 pilares)
+        # Módulos principais (10 pilares)
         modulos_data = [
             {
                 'nome': 'Dashboard',
@@ -73,6 +73,13 @@ class Command(BaseCommand):
                 'icone': 'bi-newspaper',
                 'ordem': 9
             },
+            {
+                'nome': 'Configurações',
+                'slug': 'configuracoes',
+                'descricao': 'Configurações do sistema, usuários e preferências',
+                'icone': 'bi-gear',
+                'ordem': 10
+            },
         ]
         
         modulos_criados = 0
@@ -98,7 +105,7 @@ class Command(BaseCommand):
             {
                 'nome': 'Administrador Completo',
                 'descricao': 'Acesso total a todos os módulos do sistema',
-                'modulos': ['dashboard', 'frota', 'estoque', 'manutencao', 'relatorios', 'financeiro', 'compras', 'eventos', 'noticias']
+                'modulos': ['dashboard', 'frota', 'estoque', 'manutencao', 'relatorios', 'financeiro', 'compras', 'eventos', 'noticias', 'configuracoes']
             },
             {
                 'nome': 'Gestor de Frota',
