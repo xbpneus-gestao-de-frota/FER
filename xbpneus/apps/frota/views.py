@@ -165,3 +165,171 @@ def relatorios(request):
     }
     return render(request, 'frota/relatorios.html', context)
 
+
+
+# Views AJAX para combos dependentes
+from django.http import JsonResponse
+from .models_auxiliares import MarcaVeiculo, ModeloVeiculo, CorVeiculo
+from .forms import VeiculoAutomatizadoForm
+
+@login_required
+def cadastrar_veiculo_automatizado(request):
+    """Cadastra um novo veículo usando o formulário automatizado"""
+    if request.method == 'POST':
+        form = VeiculoAutomatizadoForm(request.POST)
+        if form.is_valid():
+            veiculo = form.save(commit=False)
+            veiculo.usuario = request.user
+            veiculo.save()
+            messages.success(request, 'Veículo cadastrado com sucesso!')
+            return redirect('frota:listar_frota')
+    else:
+        form = VeiculoAutomatizadoForm()
+    
+    return render(request, 'frota/veiculo_automatizado_form.html', {'form': form})
+
+@login_required
+def editar_veiculo_automatizado(request, veiculo_id):
+    """Edita um veículo usando o formulário automatizado"""
+    veiculo = get_object_or_404(Veiculo, id=veiculo_id, usuario=request.user)
+    
+    if request.method == 'POST':
+        form = VeiculoAutomatizadoForm(request.POST, instance=veiculo)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Veículo atualizado com sucesso!')
+            return redirect('frota:listar_frota')
+    else:
+        form = VeiculoAutomatizadoForm(instance=veiculo)
+    
+    return render(request, 'frota/veiculo_automatizado_form.html', {
+        'form': form, 
+        'veiculo': veiculo,
+        'editando': True
+    })
+
+def ajax_carregar_modelos(request):
+    """AJAX: Carrega modelos baseados na marca selecionada"""
+    marca_id = request.GET.get('marca_id')
+    
+    if not marca_id:
+        return JsonResponse({'modelos': []})
+    
+    try:
+        marca = MarcaVeiculo.objects.get(id=marca_id, ativo=True)
+        modelos = ModeloVeiculo.objects.filter(
+            marca=marca, 
+            ativo=True
+        ).order_by('nome')
+        
+        modelos_data = []
+        for modelo in modelos:
+            modelos_data.append({
+                'id': modelo.id,
+                'nome': modelo.nome_completo,
+                'quantidade_eixos': modelo.quantidade_eixos,
+                'tipo_veiculo': modelo.tipo_veiculo.get_nome_display(),
+                'ano_inicio': modelo.ano_inicio,
+                'ano_fim': modelo.ano_fim
+            })
+        
+        return JsonResponse({'modelos': modelos_data})
+    
+    except MarcaVeiculo.DoesNotExist:
+        return JsonResponse({'modelos': []})
+
+def ajax_carregar_anos(request):
+    """AJAX: Carrega anos disponíveis baseados no modelo selecionado"""
+    modelo_id = request.GET.get('modelo_id')
+    
+    if not modelo_id:
+        return JsonResponse({'anos': []})
+    
+    try:
+        modelo = ModeloVeiculo.objects.get(id=modelo_id, ativo=True)
+        anos = modelo.anos_disponiveis
+        
+        anos_data = [{'value': ano, 'text': str(ano)} for ano in anos]
+        
+        return JsonResponse({
+            'anos': anos_data,
+            'modelo_info': {
+                'nome': modelo.nome_completo,
+                'quantidade_eixos': modelo.quantidade_eixos,
+                'tipo_veiculo': modelo.tipo_veiculo.get_nome_display(),
+                'capacidade_carga': float(modelo.capacidade_carga) if modelo.capacidade_carga else None,
+                'motor_padrao': modelo.motor_padrao,
+                'combustivel': modelo.combustivel
+            }
+        })
+    
+    except ModeloVeiculo.DoesNotExist:
+        return JsonResponse({'anos': []})
+
+def ajax_info_modelo(request):
+    """AJAX: Retorna informações detalhadas do modelo"""
+    modelo_id = request.GET.get('modelo_id')
+    
+    if not modelo_id:
+        return JsonResponse({'info': {}})
+    
+    try:
+        modelo = ModeloVeiculo.objects.get(id=modelo_id, ativo=True)
+        
+        info = {
+            'marca': modelo.marca.nome,
+            'nome': modelo.nome,
+            'nome_completo': modelo.nome_completo,
+            'tipo_veiculo': modelo.tipo_veiculo.get_nome_display(),
+            'quantidade_eixos': modelo.quantidade_eixos,
+            'capacidade_carga': float(modelo.capacidade_carga) if modelo.capacidade_carga else None,
+            'motor_padrao': modelo.motor_padrao,
+            'combustivel': modelo.combustivel,
+            'ano_inicio': modelo.ano_inicio,
+            'ano_fim': modelo.ano_fim,
+            'anos_disponiveis': modelo.anos_disponiveis
+        }
+        
+        # Adicionar especificações técnicas se disponíveis
+        if hasattr(modelo, 'especificacao'):
+            spec = modelo.especificacao
+            info['especificacoes'] = {
+                'potencia_motor': spec.potencia_motor,
+                'torque_motor': spec.torque_motor,
+                'transmissao': spec.transmissao,
+                'freios': spec.freios,
+                'suspensao_dianteira': spec.suspensao_dianteira,
+                'suspensao_traseira': spec.suspensao_traseira,
+                'tanque_combustivel': spec.tanque_combustivel,
+                'pneus_dianteiros': spec.pneus_dianteiros,
+                'pneus_traseiros': spec.pneus_traseiros
+            }
+        
+        return JsonResponse({'info': info})
+    
+    except ModeloVeiculo.DoesNotExist:
+        return JsonResponse({'info': {}})
+
+def ajax_validar_placa(request):
+    """AJAX: Valida se a placa já existe no sistema"""
+    placa = request.GET.get('placa', '').upper().strip()
+    veiculo_id = request.GET.get('veiculo_id')  # Para edição
+    
+    if not placa:
+        return JsonResponse({'valida': True, 'mensagem': ''})
+    
+    # Verificar se a placa já existe
+    query = Veiculo.objects.filter(placa=placa)
+    
+    # Se estamos editando, excluir o veículo atual da verificação
+    if veiculo_id:
+        query = query.exclude(id=veiculo_id)
+    
+    if query.exists():
+        return JsonResponse({
+            'valida': False, 
+            'mensagem': 'Esta placa já está cadastrada no sistema.'
+        })
+    
+    return JsonResponse({'valida': True, 'mensagem': 'Placa disponível.'})
+

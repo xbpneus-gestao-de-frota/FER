@@ -152,10 +152,19 @@
                         </a>
                         
                         <!-- Frota (antigo: Veículos) -->
-                        <a class="nav-link" href="/frota/">
-                            <img src="{% static 'mascotes/frota.webp' %}" alt="Frota" class="menu-mascote-icon">
-                            Frota
-                        </a>
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="/frota/" id="navbarFrota" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{% static 'mascotes/frota.webp' %}" alt="Frota" class="menu-mascote-icon">
+                                Frota
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarFrota">
+                                <li><a class="dropdown-item" href="/frota/"><i class="bi bi-list-ul"></i> Lista da Frota</a></li>
+                                <li><a class="dropdown-item" href="/frota/cadastrar/"><i class="bi bi-plus-circle"></i> Cadastro Simples</a></li>
+                                <li><a class="dropdown-item" href="/frota/cadastrar-automatizado/"><i class="bi bi-magic"></i> Cadastro Automatizado</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/frota/relatorios/"><i class="bi bi-graph-up"></i> Relatórios</a></li>
+                            </ul>
+                        </div>
                         
                         <!-- Estoque (antigo: Pneus) -->
                         <a class="nav-link" href="/frota/estoque/">

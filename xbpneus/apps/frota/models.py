@@ -5,10 +5,28 @@ class Veiculo(models.Model):
     """Modelo para cadastro de veículos"""
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='veiculos')
     placa = models.CharField(max_length=8, unique=True, verbose_name='Placa')
-    modelo = models.CharField(max_length=100, verbose_name='Modelo')
-    cor = models.CharField(max_length=50, verbose_name='Cor')
+    
+    # Campos atualizados para usar models auxiliares
+    marca_veiculo = models.ForeignKey('MarcaVeiculo', on_delete=models.PROTECT, null=True, blank=True, related_name='veiculos_marca')
+    modelo_veiculo = models.ForeignKey('ModeloVeiculo', on_delete=models.PROTECT, null=True, blank=True, related_name='veiculos_modelo')
+    cor_veiculo = models.ForeignKey('CorVeiculo', on_delete=models.PROTECT, null=True, blank=True, related_name='veiculos_cor')
+    
+    # Campos legados (mantidos para compatibilidade)
+    modelo = models.CharField(max_length=100, verbose_name='Modelo', blank=True)
+    cor = models.CharField(max_length=50, verbose_name='Cor', blank=True)
+    
+    # Campos principais
     km = models.IntegerField(verbose_name='Quilometragem')
     ano = models.IntegerField(verbose_name='Ano')
+    
+    # Campos automáticos baseados no modelo
+    quantidade_eixos = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name='Quantidade de Eixos')
+    tipo_veiculo = models.CharField(max_length=20, blank=True, verbose_name='Tipo de Veículo')
+    
+    # Campos opcionais
+    chassi = models.CharField(max_length=17, blank=True, verbose_name='Chassi')
+    renavam = models.CharField(max_length=11, blank=True, verbose_name='RENAVAM')
+    
     data_cadastro = models.DateTimeField(auto_now_add=True)
     
     class Meta:
@@ -16,8 +34,38 @@ class Veiculo(models.Model):
         verbose_name_plural = 'Veículos'
         ordering = ['-data_cadastro']
     
+    def save(self, *args, **kwargs):
+        # Preencher campos automáticos baseados no modelo selecionado
+        if self.modelo_veiculo:
+            self.quantidade_eixos = self.modelo_veiculo.quantidade_eixos
+            self.tipo_veiculo = self.modelo_veiculo.tipo_veiculo.nome
+            # Manter compatibilidade com campos legados
+            if not self.modelo:
+                self.modelo = str(self.modelo_veiculo)
+        
+        if self.cor_veiculo and not self.cor:
+            self.cor = self.cor_veiculo.nome
+            
+        super().save(*args, **kwargs)
+    
     def __str__(self):
+        if self.modelo_veiculo:
+            return f"{self.placa} - {self.modelo_veiculo}"
         return f"{self.placa} - {self.modelo}"
+    
+    @property
+    def nome_completo(self):
+        """Retorna nome completo do veículo"""
+        if self.modelo_veiculo:
+            return f"{self.modelo_veiculo.marca.nome} {self.modelo_veiculo.nome} {self.ano}"
+        return f"{self.modelo} {self.ano}"
+    
+    @property
+    def especificacoes(self):
+        """Retorna especificações técnicas se disponíveis"""
+        if self.modelo_veiculo and hasattr(self.modelo_veiculo, 'especificacao'):
+            return self.modelo_veiculo.especificacao
+        return None
 
 class Pneu(models.Model):
     """Modelo para cadastro de pneus"""
@@ -98,4 +146,10 @@ class HistoricoPneu(models.Model):
 
 # Importar novos models de estoque
 from .models_estoque import PneuEstoque, VinculacaoPneu, HistoricoMovimentacao
+
+# Importar models auxiliares para cadastro automatizado
+from .models_auxiliares import (
+    MarcaVeiculo, TipoVeiculo, ModeloVeiculo, CorVeiculo, 
+    ConfiguracaoEixo, EspecificacaoTecnica
+)
 

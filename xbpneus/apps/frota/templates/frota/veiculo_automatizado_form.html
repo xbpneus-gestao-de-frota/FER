@@ -1,0 +1,327 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if editando %}Editar Veículo{% else %}Cadastrar Veículo{% endif %} - Frota
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="bi bi-truck"></i> 
+                    {% if editando %}Editar Veículo{% else %}Cadastrar Novo Veículo{% endif %}
+                </h2>
+                <a href="{% url 'frota:listar_frota' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar à Lista
+                </a>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-plus-circle"></i> Dados do Veículo</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" id="formVeiculo">
+                                {% csrf_token %}
+                                
+                                <!-- Placa -->
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="{{ form.placa.id_for_label }}" class="form-label">
+                                            {{ form.placa.label }} <span class="text-danger">*</span>
+                                        </label>
+                                        {{ form.placa }}
+                                        <div class="form-text">Formato: ABC-1234 ou ABC1D23</div>
+                                        <div id="placaFeedback" class="invalid-feedback"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Marca e Modelo -->
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="{{ form.marca.id_for_label }}" class="form-label">
+                                            {{ form.marca.label }} <span class="text-danger">*</span>
+                                        </label>
+                                        {{ form.marca }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="{{ form.modelo_veiculo.id_for_label }}" class="form-label">
+                                            {{ form.modelo_veiculo.label }} <span class="text-danger">*</span>
+                                        </label>
+                                        {{ form.modelo_veiculo }}
+                                    </div>
+                                </div>
+                                
+                                <!-- Ano e Cor -->
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="{{ form.ano.id_for_label }}" class="form-label">
+                                            {{ form.ano.label }} <span class="text-danger">*</span>
+                                        </label>
+                                        {{ form.ano }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="{{ form.cor_veiculo.id_for_label }}" class="form-label">
+                                            {{ form.cor_veiculo.label }} <span class="text-danger">*</span>
+                                        </label>
+                                        {{ form.cor_veiculo }}
+                                    </div>
+                                </div>
+                                
+                                <!-- Quilometragem -->
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="{{ form.km.id_for_label }}" class="form-label">
+                                            {{ form.km.label }} <span class="text-danger">*</span>
+                                        </label>
+                                        {{ form.km }}
+                                        <div class="form-text">Quilometragem atual do veículo</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Campos Opcionais -->
+                                <h6 class="mt-4 mb-3"><i class="bi bi-info-circle"></i> Informações Adicionais (Opcional)</h6>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="{{ form.chassi.id_for_label }}" class="form-label">
+                                            {{ form.chassi.label }}
+                                        </label>
+                                        {{ form.chassi }}
+                                        <div class="form-text">17 caracteres</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="{{ form.renavam.id_for_label }}" class="form-label">
+                                            {{ form.renavam.label }}
+                                        </label>
+                                        {{ form.renavam }}
+                                        <div class="form-text">11 dígitos</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-secondary me-2" onclick="window.history.back()">
+                                        <i class="bi bi-x-lg"></i> Cancelar
+                                    </button>
+                                    <button type="submit" class="btn btn-primary" id="btnSalvar">
+                                        <i class="bi bi-check-lg"></i> 
+                                        {% if editando %}Atualizar{% else %}Cadastrar{% endif %} Veículo
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <!-- Informações do Modelo -->
+                    <div class="card" id="cardInfoModelo" style="display: none;">
+                        <div class="card-header">
+                            <h6><i class="bi bi-info-circle"></i> Informações do Modelo</h6>
+                        </div>
+                        <div class="card-body" id="infoModelo">
+                            <!-- Preenchido via JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Dicas -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h6><i class="bi bi-lightbulb"></i> Dicas</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="small">
+                                <p><strong>Cadastro Automatizado:</strong></p>
+                                <ul class="mb-2">
+                                    <li>Selecione a marca para carregar os modelos</li>
+                                    <li>Escolha o modelo para ver os anos disponíveis</li>
+                                    <li>As especificações são preenchidas automaticamente</li>
+                                </ul>
+                                
+                                <p><strong>Campos Obrigatórios:</strong></p>
+                                <ul class="mb-0">
+                                    <li>Placa (única no sistema)</li>
+                                    <li>Marca e Modelo</li>
+                                    <li>Ano e Cor</li>
+                                    <li>Quilometragem atual</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript para combos dependentes -->
+<script>
+// URLs das APIs AJAX
+const urlModelos = "{% url 'frota:ajax_modelos' %}";
+const urlAnos = "{% url 'frota:ajax_anos' %}";
+const urlInfoModelo = "{% url 'frota:ajax_info_modelo' %}";
+const urlValidarPlaca = "{% url 'frota:ajax_validar_placa' %}";
+
+// Elementos do formulário
+const selectMarca = document.getElementById('id_marca');
+const selectModelo = document.getElementById('id_modelo_veiculo');
+const selectAno = document.getElementById('id_ano');
+const inputPlaca = document.getElementById('id_placa');
+const cardInfoModelo = document.getElementById('cardInfoModelo');
+const divInfoModelo = document.getElementById('infoModelo');
+
+// Carregar modelos quando marca for selecionada
+function carregarModelos() {
+    const marcaId = selectMarca.value;
+    
+    // Limpar modelo e ano
+    selectModelo.innerHTML = '<option value="">Carregando modelos...</option>';
+    selectAno.innerHTML = '<option value="">Primeiro selecione o modelo...</option>';
+    cardInfoModelo.style.display = 'none';
+    
+    if (!marcaId) {
+        selectModelo.innerHTML = '<option value="">Primeiro selecione a marca...</option>';
+        return;
+    }
+    
+    fetch(`${urlModelos}?marca_id=${marcaId}`)
+        .then(response => response.json())
+        .then(data => {
+            selectModelo.innerHTML = '<option value="">Selecione o modelo...</option>';
+            
+            data.modelos.forEach(modelo => {
+                const option = document.createElement('option');
+                option.value = modelo.id;
+                option.textContent = modelo.nome;
+                option.dataset.quantidadeEixos = modelo.quantidade_eixos;
+                option.dataset.tipoVeiculo = modelo.tipo_veiculo;
+                selectModelo.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Erro ao carregar modelos:', error);
+            selectModelo.innerHTML = '<option value="">Erro ao carregar modelos</option>';
+        });
+}
+
+// Carregar anos quando modelo for selecionado
+function carregarAnos() {
+    const modeloId = selectModelo.value;
+    
+    // Limpar anos
+    selectAno.innerHTML = '<option value="">Carregando anos...</option>';
+    cardInfoModelo.style.display = 'none';
+    
+    if (!modeloId) {
+        selectAno.innerHTML = '<option value="">Primeiro selecione o modelo...</option>';
+        return;
+    }
+    
+    fetch(`${urlAnos}?modelo_id=${modeloId}`)
+        .then(response => response.json())
+        .then(data => {
+            selectAno.innerHTML = '<option value="">Selecione o ano...</option>';
+            
+            data.anos.forEach(ano => {
+                const option = document.createElement('option');
+                option.value = ano.value;
+                option.textContent = ano.text;
+                selectAno.appendChild(option);
+            });
+            
+            // Mostrar informações do modelo
+            if (data.modelo_info) {
+                mostrarInfoModelo(data.modelo_info);
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao carregar anos:', error);
+            selectAno.innerHTML = '<option value="">Erro ao carregar anos</option>';
+        });
+}
+
+// Mostrar informações do modelo
+function mostrarInfoModelo(info) {
+    let html = `
+        <div class="small">
+            <p><strong>Tipo:</strong> ${info.tipo_veiculo}</p>
+            <p><strong>Eixos:</strong> ${info.quantidade_eixos}</p>
+            <p><strong>Combustível:</strong> ${info.combustivel}</p>
+    `;
+    
+    if (info.capacidade_carga) {
+        html += `<p><strong>Capacidade:</strong> ${info.capacidade_carga.toLocaleString()} kg</p>`;
+    }
+    
+    if (info.motor_padrao) {
+        html += `<p><strong>Motor:</strong> ${info.motor_padrao}</p>`;
+    }
+    
+    html += '</div>';
+    
+    divInfoModelo.innerHTML = html;
+    cardInfoModelo.style.display = 'block';
+}
+
+// Validar placa em tempo real
+let timeoutPlaca;
+inputPlaca.addEventListener('input', function() {
+    clearTimeout(timeoutPlaca);
+    
+    timeoutPlaca = setTimeout(() => {
+        const placa = this.value.trim();
+        const veiculoId = '{% if editando %}{{ veiculo.id }}{% endif %}';
+        
+        if (placa.length >= 7) {
+            fetch(`${urlValidarPlaca}?placa=${encodeURIComponent(placa)}&veiculo_id=${veiculoId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.valida) {
+                        inputPlaca.classList.remove('is-invalid');
+                        inputPlaca.classList.add('is-valid');
+                    } else {
+                        inputPlaca.classList.remove('is-valid');
+                        inputPlaca.classList.add('is-invalid');
+                        document.getElementById('placaFeedback').textContent = data.mensagem;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao validar placa:', error);
+                });
+        } else {
+            inputPlaca.classList.remove('is-valid', 'is-invalid');
+        }
+    }, 500);
+});
+
+// Formatação automática da placa
+inputPlaca.addEventListener('input', function() {
+    let valor = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    
+    if (valor.length <= 7) {
+        // Formato antigo: ABC1234 -> ABC-1234
+        if (valor.length > 3 && /^[A-Z]{3}[0-9]/.test(valor)) {
+            valor = valor.substring(0, 3) + '-' + valor.substring(3);
+        }
+    }
+    
+    this.value = valor;
+});
+
+// Inicializar se estamos editando
+{% if editando and veiculo.marca_veiculo %}
+document.addEventListener('DOMContentLoaded', function() {
+    // Se já tem modelo selecionado, carregar informações
+    if (selectModelo.value) {
+        carregarAnos();
+    }
+});
+{% endif %}
+</script>
+{% endblock %}
+

@@ -30,6 +30,16 @@ urlpatterns = [
     path('detalhes/<int:veiculo_id>/', views.detalhes_veiculo, name='detalhes_frota'),
     path('editar/<int:veiculo_id>/', views.editar_veiculo, name='editar_frota'),
     
+    # Cadastro automatizado de veículos
+    path('cadastrar-automatizado/', views.cadastrar_veiculo_automatizado, name='cadastrar_automatizado'),
+    path('editar-automatizado/<int:veiculo_id>/', views.editar_veiculo_automatizado, name='editar_automatizado'),
+    
+    # APIs AJAX para combos dependentes
+    path('ajax/modelos/', views.ajax_carregar_modelos, name='ajax_modelos'),
+    path('ajax/anos/', views.ajax_carregar_anos, name='ajax_anos'),
+    path('ajax/info-modelo/', views.ajax_info_modelo, name='ajax_info_modelo'),
+    path('ajax/validar-placa/', views.ajax_validar_placa, name='ajax_validar_placa'),
+    
     # Estoque de Pneus (sistema principal)
     path('estoque/', include('xbpneus.apps.frota.urls_estoque')),
     
