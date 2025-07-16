@@ -38,12 +38,10 @@ class SubUsuarioForm(forms.ModelForm):
     
     # Liberações de acesso com interface melhorada
     modulos = forms.ModelMultipleChoiceField(
-        queryset=ModuloAcesso.objects.filter(ativo=True),
-        widget=forms.CheckboxSelectMultiple(attrs={
-            'class': 'form-check-input modulo-checkbox'
-        }),
-        required=False,
-        label="Liberações de Acesso aos Pilares"
+        queryset=ModuloAcesso.objects.filter(ativo=True).order_by('id'),
+        widget=forms.CheckboxSelectMultiple,
+        required=True,
+        label="Selecione os Pilares"
     )
     
     perfil_acesso = forms.ModelChoiceField(
