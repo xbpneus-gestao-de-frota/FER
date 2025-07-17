@@ -200,6 +200,11 @@
                         <div class="form-text mb-3">
                             Marque abaixo as áreas do sistema XBPNEUS que este usuário poderá acessar. Cada área representa uma função específica do sistema.
                         </div>
+                        
+                        <!-- DEBUG: Verificar se form.modulos existe -->
+                        <p><strong>DEBUG:</strong> form.modulos = {{ form.modulos }}</p>
+                        <p><strong>DEBUG:</strong> form.modulos.field.queryset.count = {{ form.modulos.field.queryset.count }}</p>
+                        
                         <div class="row g-2">
                             {% for checkbox in form.modulos %}
                                 <div class="col-md-4">
@@ -208,8 +213,11 @@
                                         <span class="ms-2">{{ checkbox.choice_label }}</span>
                                     </div>
                                 </div>
+                            {% empty %}
+                                <p class="text-danger">Nenhum módulo encontrado!</p>
                             {% endfor %}
                         </div>
+                        
                         {% if form.modulos.errors %}
                             <div class="text-danger mt-2 fw-bold">
                                 Selecione pelo menos uma área para liberar o acesso.
