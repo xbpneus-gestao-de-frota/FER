@@ -44,18 +44,6 @@ class SubUsuarioForm(forms.ModelForm):
         label="Selecione os Pilares"
     )
     
-    perfil_acesso = forms.ModelChoiceField(
-        queryset=PerfilAcesso.objects.filter(ativo=True),
-        required=False,
-        empty_label="Selecione um perfil (opcional)",
-        widget=forms.Select(attrs={
-            'class': 'form-select',
-            'id': 'id_perfil_acesso'
-        }),
-        label="Perfil de Acesso",
-        help_text="Selecione um perfil para aplicar permissões pré-definidas automaticamente"
-    )
-    
     class Meta:
         model = SubUsuario
         fields = ['nome', 'email', 'login', 'funcao', 'modulos', 'ativo']
