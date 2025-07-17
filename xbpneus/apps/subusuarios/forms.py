@@ -5,11 +5,6 @@ from django.core.exceptions import ValidationError
 
 
 class SubUsuarioForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Sempre mostra TODOS os módulos ativos!
-        self.fields['modulos'].queryset = ModuloAcesso.objects.filter(ativo=True).order_by('id')
-    
     senha = forms.CharField(
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
@@ -46,6 +41,11 @@ class SubUsuarioForm(forms.ModelForm):
         required=True,
         label="Selecione as Áreas de Acesso"
     )
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Sempre mostra TODOS os módulos ativos!
+        self.fields['modulos'].queryset = ModuloAcesso.objects.filter(ativo=True).order_by('id')
     
     class Meta:
         model = SubUsuario
