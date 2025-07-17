@@ -8,7 +8,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
 from .models import SubUsuario, ModuloAcesso
-from .forms import SubUsuarioForm, ModuloAcessoForm, FiltroSubUsuarioForm
+from .forms import SubUsuarioForm, FiltroSubUsuarioForm
 from .utils import enviar_convite_subusuario, reenviar_convite_subusuario, validar_token_convite, definir_senha_subusuario
 
 
@@ -179,26 +179,6 @@ def listar_modulos(request):
         'modulos': modulos,
     }
     return render(request, 'subusuarios/modulos_list.html', context)
-
-
-@login_required
-def cadastrar_modulo(request):
-    """Cadastra um novo módulo de acesso"""
-    if request.method == 'POST':
-        form = ModuloAcessoForm(request.POST)
-        if form.is_valid():
-            modulo = form.save()
-            messages.success(request, f'Módulo "{modulo.nome}" cadastrado com sucesso!')
-            return redirect('subusuarios:listar_modulos')
-    else:
-        form = ModuloAcessoForm()
-    
-    context = {
-        'form': form,
-        'titulo': 'Cadastrar Módulo de Acesso',
-        'botao_texto': 'Cadastrar',
-    }
-    return render(request, 'subusuarios/modulos_form.html', context)
 
 
 # ===== CONVITES E DEFINIÇÃO DE SENHA =====
