@@ -31,7 +31,6 @@ urlpatterns = [
     
     # === AJAX ENDPOINTS ===
     # Módulos de perfil
-    path('ajax/perfil/<int:perfil_id>/modulos/', views.ajax_modulos_perfil, name='ajax_modulos_perfil'),
     
     # Validações
     path('ajax/validar-login/', views.ajax_validar_login, name='ajax_validar_login'),
