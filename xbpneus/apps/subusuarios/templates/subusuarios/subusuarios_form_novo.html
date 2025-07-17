@@ -12,37 +12,6 @@
     margin-top: 1rem;
 }
 
-.pilares-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.pilar-item {
-    background: white;
-    border: 1px solid #dee2e6;
-    border-radius: 0.375rem;
-    padding: 1rem;
-    transition: all 0.2s;
-}
-
-.pilar-item:hover {
-    border-color: #0d6efd;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.pilar-item.selected {
-    border-color: #0d6efd;
-    background: #e7f3ff;
-}
-
-.controles-selecao {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
 .senha-container {
     background: #fff3cd;
     border: 1px solid #ffeaa7;
@@ -242,110 +211,33 @@
                         {% endif %}
                     </div>
                     
-                    <div class="liberacoes-container">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="mb-0">Selecione os Pilares:</h6>
-                            <div class="controles-selecao">
-                                <button type="button" class="btn btn-sm btn-outline-primary" id="selecionar-todos">
-                                    <i class="bi bi-check-all"></i> Selecionar Todos
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary" id="desmarcar-todos">
-                                    <i class="bi bi-x-circle"></i> Desmarcar Todos
-                                </button>
-                            </div>
+                    <!-- Seção de Módulos com Template Melhorado -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold fs-5">
+                            Quais áreas este usuário poderá acessar?
+                        </label>
+                        <div class="form-text mb-3">
+                            Marque abaixo as áreas do sistema XBPNEUS que este usuário poderá acessar. Cada área representa uma função específica do sistema.
                         </div>
-                        
-                        <div class="pilares-grid">
-                            <!-- Renderização simples dos checkboxes -->
-                            <style>
-                                .pilares-grid #id_modulos {
-                                    display: block !important;
-                                    visibility: visible !important;
-                                }
-                                .pilares-grid #id_modulos > div {
-                                    display: block !important;
-                                    margin-bottom: 10px !important;
-                                    padding: 5px !important;
-                                    border: 1px solid #ddd !important;
-                                    border-radius: 5px !important;
-                                }
-                                .pilares-grid input[type="checkbox"] {
-                                    display: inline-block !important;
-                                    visibility: visible !important;
-                                    margin-right: 8px !important;
-                                }
-                                .pilares-grid label {
-                                    display: inline-block !important;
-                                    font-weight: bold !important;
-                                    color: #333 !important;
-                                }
-                                .pilares-manual {
-                                    display: grid;
-                                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                                    gap: 10px;
-                                    margin-top: 15px;
-                                }
-                                .pilar-checkbox {
-                                    display: flex;
-                                    align-items: center;
-                                    padding: 8px;
-                                    border: 1px solid #ddd;
-                                    border-radius: 5px;
-                                    background: #f8f9fa;
-                                }
-                            </style>
-                            {{ form.modulos }}
-                            
-                            <!-- Checkboxes manuais como fallback -->
-                            <div class="pilares-manual" id="pilares-manual">
-                                <div class="pilar-checkbox">
-                                    <input type="checkbox" name="modulos" value="1" id="manual_modulos_1">
-                                    <label for="manual_modulos_1">Dashboard</label>
+                        <div class="row g-2">
+                            {% for checkbox in form.modulos %}
+                                <div class="col-md-4">
+                                    <div class="form-check card p-2 shadow-sm d-flex align-items-center">
+                                        {{ checkbox.tag }}
+                                        <span class="ms-2">{{ checkbox.choice_label }}</span>
+                                    </div>
                                 </div>
-                                <div class="pilar-checkbox">
-                                    <input type="checkbox" name="modulos" value="2" id="manual_modulos_2">
-                                    <label for="manual_modulos_2">Frota</label>
-                                </div>
-                                <div class="pilar-checkbox">
-                                    <input type="checkbox" name="modulos" value="3" id="manual_modulos_3">
-                                    <label for="manual_modulos_3">Estoque</label>
-                                </div>
-                                <div class="pilar-checkbox">
-                                    <input type="checkbox" name="modulos" value="4" id="manual_modulos_4">
-                                    <label for="manual_modulos_4">Manutenção</label>
-                                </div>
-                                <div class="pilar-checkbox">
-                                    <input type="checkbox" name="modulos" value="5" id="manual_modulos_5">
-                                    <label for="manual_modulos_5">Relatórios</label>
-                                </div>
-                                <div class="pilar-checkbox">
-                                    <input type="checkbox" name="modulos" value="6" id="manual_modulos_6">
-                                    <label for="manual_modulos_6">Financeiro</label>
-                                </div>
-                                <div class="pilar-checkbox">
-                                    <input type="checkbox" name="modulos" value="7" id="manual_modulos_7">
-                                    <label for="manual_modulos_7">Compras</label>
-                                </div>
-                                <div class="pilar-checkbox">
-                                    <input type="checkbox" name="modulos" value="8" id="manual_modulos_8">
-                                    <label for="manual_modulos_8">Eventos</label>
-                                </div>
-                                <div class="pilar-checkbox">
-                                    <input type="checkbox" name="modulos" value="9" id="manual_modulos_9">
-                                    <label for="manual_modulos_9">Notícias</label>
-                                </div>
-                                <div class="pilar-checkbox">
-                                    <input type="checkbox" name="modulos" value="10" id="manual_modulos_10">
-                                    <label for="manual_modulos_10">Configurações</label>
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
-                        
                         {% if form.modulos.errors %}
-                            <div class="invalid-feedback d-block mt-2">
-                                {% for error in form.modulos.errors %}{{ error }}{% endfor %}
+                            <div class="text-danger mt-2 fw-bold">
+                                Selecione pelo menos uma área para liberar o acesso.
                             </div>
                         {% endif %}
+                        <div class="d-flex mt-3">
+                            <button type="button" class="btn btn-outline-primary me-2" onclick="selecionarTodosModulos()">Selecionar Todos</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="desmarcarTodosModulos()">Desmarcar Todos</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -380,12 +272,23 @@
 
 {% block extra_js %}
 <script>
+// Função para selecionar todos os módulos
+function selecionarTodosModulos() {
+    document.querySelectorAll('input[name="modulos"]').forEach(function(cb) {
+        cb.checked = true;
+    });
+}
+
+// Função para desmarcar todos os módulos
+function desmarcarTodosModulos() {
+    document.querySelectorAll('input[name="modulos"]').forEach(function(cb) {
+        cb.checked = false;
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const enviarConviteCheckbox = document.getElementById('id_enviar_convite');
     const camposSenha = document.getElementById('campos-senha');
-    const selecionarTodos = document.getElementById('selecionar-todos');
-    const desmarcarTodos = document.getElementById('desmarcar-todos');
-    const perfilAcesso = document.getElementById('id_perfil_acesso');
     
     // Controlar exibição dos campos de senha
     function toggleCamposSenha() {
@@ -409,47 +312,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     enviarConviteCheckbox.addEventListener('change', toggleCamposSenha);
     toggleCamposSenha(); // Executar na inicialização
-    
-    // Selecionar/Desmarcar todos os módulos
-    selecionarTodos.addEventListener('click', function() {
-        document.querySelectorAll('.modulo-checkbox').forEach(checkbox => {
-            checkbox.checked = true;
-            updatePilarItem(checkbox);
-        });
-    });
-    
-    desmarcarTodos.addEventListener('click', function() {
-        document.querySelectorAll('.modulo-checkbox').forEach(checkbox => {
-            checkbox.checked = false;
-            updatePilarItem(checkbox);
-        });
-    });
-    
-    // Atualizar visual dos pilares
-    function updatePilarItem(checkbox) {
-        const pilarItem = checkbox.closest('.pilar-item');
-        if (checkbox.checked) {
-            pilarItem.classList.add('selected');
-        } else {
-            pilarItem.classList.remove('selected');
-        }
-    }
-    
-    // Aplicar visual inicial e eventos
-    document.querySelectorAll('.modulo-checkbox').forEach(checkbox => {
-        updatePilarItem(checkbox);
-        checkbox.addEventListener('change', function() {
-            updatePilarItem(this);
-        });
-    });
-    
-    // Aplicar perfil de acesso (simulação - seria implementado via AJAX)
-    perfilAcesso.addEventListener('change', function() {
-        if (this.value) {
-            // Aqui seria feita uma requisição AJAX para buscar os módulos do perfil
-            console.log('Perfil selecionado:', this.value);
-        }
-    });
 });
 </script>
 {% endblock %}
