@@ -15,7 +15,7 @@ from .utils import enviar_convite_subusuario, reenviar_convite_subusuario, valid
 @login_required
 def listar_subusuarios(request):
     """Lista todos os subusuários do usuário principal"""
-    subusuarios = SubUsuario.objects.filter(usuario_principal=request.user)
+    subusuarios = SubUsuario.objects.filter()
     
     # Estatísticas
     stats = {
@@ -35,7 +35,7 @@ def listar_subusuarios(request):
 def cadastrar_subusuario(request):
     """Cadastra um novo subusuário"""
     if request.method == 'POST':
-        form = SubUsuarioForm(request.POST, usuario_principal=request.user)
+        form = SubUsuarioForm(request.POST, )
         if form.is_valid():
             subusuario = form.save()
             
@@ -61,7 +61,7 @@ def cadastrar_subusuario(request):
             
             return redirect('configuracoes:subusuarios:listar_subusuarios')
     else:
-        form = SubUsuarioForm(usuario_principal=request.user)
+        form = SubUsuarioForm()
     
     context = {
         'form': form,
@@ -77,21 +77,21 @@ def editar_subusuario(request, subusuario_id):
     subusuario = get_object_or_404(
         SubUsuario, 
         id=subusuario_id, 
-        usuario_principal=request.user
+        
     )
     
     if request.method == 'POST':
         form = SubUsuarioForm(
             request.POST, 
             instance=subusuario, 
-            usuario_principal=request.user
+            
         )
         if form.is_valid():
             form.save()
             messages.success(request, f'Subusuário "{subusuario.nome}" atualizado com sucesso!')
             return redirect('configuracoes:subusuarios:listar_subusuarios')
     else:
-        form = SubUsuarioForm(instance=subusuario, usuario_principal=request.user)
+        form = SubUsuarioForm(instance=subusuario, )
     
     context = {
         'form': form,
@@ -108,7 +108,7 @@ def detalhes_subusuario(request, subusuario_id):
     subusuario = get_object_or_404(
         SubUsuario, 
         id=subusuario_id, 
-        usuario_principal=request.user
+        
     )
     
     context = {
@@ -123,7 +123,7 @@ def excluir_subusuario(request, subusuario_id):
     subusuario = get_object_or_404(
         SubUsuario, 
         id=subusuario_id, 
-        usuario_principal=request.user
+        
     )
     
     if request.method == 'POST':
@@ -144,7 +144,7 @@ def alternar_status_subusuario(request, subusuario_id):
     subusuario = get_object_or_404(
         SubUsuario, 
         id=subusuario_id, 
-        usuario_principal=request.user
+        
     )
     
     subusuario.ativo = not subusuario.ativo
@@ -207,7 +207,7 @@ def enviar_convite(request, subusuario_id):
     subusuario = get_object_or_404(
         SubUsuario, 
         id=subusuario_id, 
-        usuario_principal=request.user
+        
     )
     
     if enviar_convite_subusuario(subusuario, request):
@@ -243,7 +243,7 @@ def ajax_validar_login(request):
     
     queryset = SubUsuario.objects.filter(
         login=login, 
-        usuario_principal=request.user
+        
     )
     
     # Se estamos editando, excluir o próprio registro
@@ -266,7 +266,7 @@ def ajax_validar_email(request):
     
     queryset = SubUsuario.objects.filter(
         email=email, 
-        usuario_principal=request.user
+        
     )
     
     # Se estamos editando, excluir o próprio registro
