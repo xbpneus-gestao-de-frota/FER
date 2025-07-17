@@ -8,25 +8,14 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
 from .models import SubUsuario, ModuloAcesso
-from .forms import SubUsuarioForm, FiltroSubUsuarioForm
+from .forms import SubUsuarioForm
 from .utils import enviar_convite_subusuario, reenviar_convite_subusuario, validar_token_convite, definir_senha_subusuario
 
 
 @login_required
 def listar_subusuarios(request):
-    """Lista todos os subusuários do usuário principal com filtros"""
+    """Lista todos os subusuários do usuário principal"""
     subusuarios = SubUsuario.objects.filter(usuario_principal=request.user)
-    form = FiltroSubUsuarioForm(request.GET)
-    
-    # Aplicar filtros
-    if form.is_valid():
-        if form.cleaned_data['funcao']:
-            subusuarios = subusuarios.filter(funcao=form.cleaned_data['funcao'])
-        if form.cleaned_data['ativo']:
-            ativo = form.cleaned_data['ativo'] == 'True'
-            subusuarios = subusuarios.filter(ativo=ativo)
-        if form.cleaned_data['modulo']:
-            subusuarios = subusuarios.filter(modulos=form.cleaned_data['modulo'])
     
     # Estatísticas
     stats = {
@@ -37,7 +26,6 @@ def listar_subusuarios(request):
     
     context = {
         'subusuarios': subusuarios,
-        'form': form,
         'stats': stats,
     }
     return render(request, 'subusuarios/subusuarios_list.html', context)
