@@ -7,8 +7,8 @@ from django.db.models import Q, Count
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
-from .models import SubUsuario, ModuloAcesso, PerfilAcesso
-from .forms import SubUsuarioForm, PerfilAcessoForm, ModuloAcessoForm, FiltroSubUsuarioForm
+from .models import SubUsuario, ModuloAcesso
+from .forms import SubUsuarioForm, ModuloAcessoForm, FiltroSubUsuarioForm
 from .utils import enviar_convite_subusuario, reenviar_convite_subusuario, validar_token_convite, definir_senha_subusuario
 
 
@@ -79,7 +79,6 @@ def cadastrar_subusuario(request):
         'form': form,
         'titulo': 'Cadastrar Subusuário',
         'botao_texto': 'Cadastrar',
-        'perfis_acesso': PerfilAcesso.objects.filter(ativo=True),
     }
     return render(request, 'subusuarios/subusuarios_form_novo.html', context)
 
@@ -101,10 +100,7 @@ def editar_subusuario(request, subusuario_id):
         )
         if form.is_valid():
             form.save()
-            messages.success(
-                request, 
-                f'Subusuário "{subusuario.nome}" atualizado com sucesso!'
-            )
+            messages.success(request, f'Subusuário "{subusuario.nome}" atualizado com sucesso!')
             return redirect('configuracoes:subusuarios:listar_subusuarios')
     else:
         form = SubUsuarioForm(instance=subusuario, usuario_principal=request.user)
@@ -114,7 +110,6 @@ def editar_subusuario(request, subusuario_id):
         'subusuario': subusuario,
         'titulo': 'Editar Subusuário',
         'botao_texto': 'Atualizar',
-        'perfis_acesso': PerfilAcesso.objects.filter(ativo=True),
     }
     return render(request, 'subusuarios/subusuarios_form_novo.html', context)
 
@@ -130,179 +125,8 @@ def detalhes_subusuario(request, subusuario_id):
     
     context = {
         'subusuario': subusuario,
-        'modulos_acesso': subusuario.get_modulos_ativos(),
     }
-    return render(request, 'subusuarios/subusuarios_detalhes.html', context)
-
-
-@login_required
-@require_POST
-def excluir_subusuario(request, subusuario_id):
-    """Exclui um subusuário"""
-    subusuario = get_object_or_404(
-        SubUsuario, 
-        id=subusuario_id, 
-        usuario_principal=request.user
-    )
-    
-    nome = subusuario.nome
-    subusuario.delete()
-    
-    messages.success(request, f'Subusuário "{nome}" excluído com sucesso!')
-    return redirect('configuracoes:subusuarios:listar_subusuarios')
-
-
-@login_required
-@require_POST
-def toggle_ativo_subusuario(request, subusuario_id):
-    """Ativa/desativa um subusuário via AJAX"""
-    subusuario = get_object_or_404(
-        SubUsuario, 
-        id=subusuario_id, 
-        usuario_principal=request.user
-    )
-    
-    subusuario.ativo = not subusuario.ativo
-    subusuario.save()
-    
-    return JsonResponse({
-        'success': True,
-        'ativo': subusuario.ativo,
-        'message': f'Subusuário {"ativado" if subusuario.ativo else "desativado"} com sucesso!'
-    })
-
-
-# ===== VIEWS PARA GESTÃO DE MÓDULOS DE ACESSO =====
-
-@login_required
-def listar_modulos(request):
-    """Lista módulos de acesso (apenas para administradores)"""
-    modulos = ModuloAcesso.objects.all().order_by('ordem', 'nome')
-    
-    context = {
-        'modulos': modulos,
-    }
-    return render(request, 'subusuarios/modulos_list.html', context)
-
-
-@login_required
-def cadastrar_modulo(request):
-    """Cadastra um novo módulo de acesso"""
-    if request.method == 'POST':
-        form = ModuloAcessoForm(request.POST)
-        if form.is_valid():
-            modulo = form.save()
-            messages.success(request, f'Módulo "{modulo.nome}" cadastrado com sucesso!')
-            return redirect('subusuarios:listar_modulos')
-    else:
-        form = ModuloAcessoForm()
-    
-    context = {
-        'form': form,
-        'titulo': 'Cadastrar Módulo',
-        'botao_texto': 'Cadastrar',
-    }
-    return render(request, 'subusuarios/modulos_form.html', context)
-
-
-# ===== VIEWS PARA GESTÃO DE PERFIS DE ACESSO =====
-
-@login_required
-def listar_perfis(request):
-    """Lista perfis de acesso"""
-    perfis = PerfilAcesso.objects.all().annotate(
-        total_modulos=Count('modulos')
-    )
-    
-    context = {
-        'perfis': perfis,
-    }
-    return render(request, 'subusuarios/perfis_list.html', context)
-
-
-@login_required
-def cadastrar_perfil(request):
-    """Cadastra um novo perfil de acesso"""
-    if request.method == 'POST':
-        form = PerfilAcessoForm(request.POST)
-        if form.is_valid():
-            perfil = form.save()
-            messages.success(request, f'Perfil "{perfil.nome}" cadastrado com sucesso!')
-            return redirect('subusuarios:listar_perfis')
-    else:
-        form = PerfilAcessoForm()
-    
-    context = {
-        'form': form,
-        'titulo': 'Cadastrar Perfil de Acesso',
-        'botao_texto': 'Cadastrar',
-    }
-    return render(request, 'subusuarios/perfis_form.html', context)
-
-
-@login_required
-def editar_perfil(request, perfil_id):
-    """Edita um perfil de acesso"""
-    perfil = get_object_or_404(PerfilAcesso, id=perfil_id)
-    
-    if request.method == 'POST':
-        form = PerfilAcessoForm(request.POST, instance=perfil)
-        if form.is_valid():
-            form.save()
-            messages.success(request, f'Perfil "{perfil.nome}" atualizado com sucesso!')
-            return redirect('subusuarios:listar_perfis')
-    else:
-        form = PerfilAcessoForm(instance=perfil)
-    
-    context = {
-        'form': form,
-        'perfil': perfil,
-        'titulo': 'Editar Perfil de Acesso',
-        'botao_texto': 'Atualizar',
-    }
-    return render(request, 'subusuarios/perfis_form.html', context)
-
-
-# ===== APIS AJAX =====
-
-@login_required
-def api_perfil_modulos(request, perfil_id):
-    """Retorna módulos de um perfil via AJAX"""
-    try:
-        perfil = PerfilAcesso.objects.get(id=perfil_id, ativo=True)
-        modulos = list(perfil.modulos.values_list('id', flat=True))
-        return JsonResponse({
-            'success': True,
-            'modulos': modulos
-        })
-    except PerfilAcesso.DoesNotExist:
-        return JsonResponse({
-            'success': False,
-            'error': 'Perfil não encontrado'
-        })
-
-
-# ===== DECORATORS E UTILITÁRIOS =====
-
-def require_module_access(module_slug):
-    """Decorator para verificar acesso a módulo específico"""
-    def decorator(view_func):
-        def wrapper(request, *args, **kwargs):
-            # Verificar se o usuário tem acesso ao módulo
-            # Implementar lógica de verificação aqui
-            return view_func(request, *args, **kwargs)
-        return wrapper
-    return decorator
-
-
-def get_user_modules(user):
-    """Retorna módulos acessíveis pelo usuário"""
-    if hasattr(user, 'subusuario'):
-        return user.subusuario.get_modulos_ativos()
-    else:
-        # Usuário principal tem acesso a todos os módulos
-        return ModuloAcesso.objects.filter(ativo=True).order_by('ordem', 'nome')
-
+    return render(request, 'subusuarios/subusuarios_detail.html', context)
 
 
 @login_required
@@ -326,10 +150,9 @@ def excluir_subusuario(request, subusuario_id):
     return render(request, 'subusuarios/subusuarios_confirm_delete.html', context)
 
 
-@require_POST
 @login_required
-def toggle_ativo_subusuario(request, subusuario_id):
-    """Ativa/desativa um subusuário via AJAX"""
+def alternar_status_subusuario(request, subusuario_id):
+    """Alterna status ativo/inativo de um subusuário"""
     subusuario = get_object_or_404(
         SubUsuario, 
         id=subusuario_id, 
@@ -339,114 +162,69 @@ def toggle_ativo_subusuario(request, subusuario_id):
     subusuario.ativo = not subusuario.ativo
     subusuario.save()
     
-    return JsonResponse({
-        'success': True,
-        'ativo': subusuario.ativo,
-        'message': f'Subusuário {"ativado" if subusuario.ativo else "desativado"} com sucesso!'
-    })
-
-
-# ===== FLUXO DE CONVITE POR E-MAIL =====
-
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
-from django.conf import settings
-from django.urls import reverse
-import uuid
-
-
-@login_required
-def enviar_convite(request, subusuario_id):
-    """Envia convite por e-mail para subusuário definir senha"""
-    subusuario = get_object_or_404(
-        SubUsuario, 
-        id=subusuario_id, 
-        usuario_principal=request.user
-    )
-    
-    # Gerar novo token de convite
-    subusuario.gerar_novo_token_convite()
-    subusuario.save()
-    
-    # Preparar dados do e-mail
-    link_convite = request.build_absolute_uri(
-        reverse('configuracoes:subusuarios:definir_senha', args=[subusuario.token_convite])
-    )
-    
-    context_email = {
-        'subusuario': subusuario,
-        'usuario_principal': request.user,
-        'link_convite': link_convite,
-        'empresa': getattr(request.user, 'empresa', 'XBPNEUS'),
-    }
-    
-    # Renderizar template do e-mail
-    html_message = render_to_string('subusuarios/emails/convite.html', context_email)
-    plain_message = strip_tags(html_message)
-    
-    try:
-        # Enviar e-mail
-        send_mail(
-            subject=f'Convite para acessar o sistema XBPNEUS - {context_email["empresa"]}',
-            message=plain_message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[subusuario.email],
-            html_message=html_message,
-            fail_silently=False,
-        )
-        
-        # Marcar convite como enviado
-        subusuario.convite_enviado = True
-        subusuario.save()
-        
-        messages.success(
-            request, 
-            f'Convite enviado com sucesso para {subusuario.email}!'
-        )
-        
-    except Exception as e:
-        messages.error(
-            request, 
-            f'Erro ao enviar convite: {str(e)}'
-        )
+    status = "ativado" if subusuario.ativo else "desativado"
+    messages.success(request, f'Subusuário "{subusuario.nome}" {status} com sucesso!')
     
     return redirect('configuracoes:subusuarios:listar_subusuarios')
 
 
-def definir_senha(request, token):
-    """Página para subusuário definir sua senha usando token do convite"""
-    try:
-        subusuario = SubUsuario.objects.get(token_convite=token)
-    except SubUsuario.DoesNotExist:
-        messages.error(request, 'Token de convite inválido ou expirado.')
-        return redirect('login')
+# ===== VIEWS PARA GESTÃO DE MÓDULOS =====
+
+@login_required
+def listar_modulos(request):
+    """Lista módulos de acesso"""
+    modulos = ModuloAcesso.objects.all()
     
-    if subusuario.senha_definida:
-        messages.info(request, 'Senha já foi definida para este usuário.')
+    context = {
+        'modulos': modulos,
+    }
+    return render(request, 'subusuarios/modulos_list.html', context)
+
+
+@login_required
+def cadastrar_modulo(request):
+    """Cadastra um novo módulo de acesso"""
+    if request.method == 'POST':
+        form = ModuloAcessoForm(request.POST)
+        if form.is_valid():
+            modulo = form.save()
+            messages.success(request, f'Módulo "{modulo.nome}" cadastrado com sucesso!')
+            return redirect('subusuarios:listar_modulos')
+    else:
+        form = ModuloAcessoForm()
+    
+    context = {
+        'form': form,
+        'titulo': 'Cadastrar Módulo de Acesso',
+        'botao_texto': 'Cadastrar',
+    }
+    return render(request, 'subusuarios/modulos_form.html', context)
+
+
+# ===== CONVITES E DEFINIÇÃO DE SENHA =====
+
+def definir_senha(request, token):
+    """Permite que subusuário defina sua senha via token"""
+    subusuario = validar_token_convite(token)
+    
+    if not subusuario:
+        messages.error(request, 'Token inválido ou expirado.')
         return redirect('login')
     
     if request.method == 'POST':
         senha = request.POST.get('senha')
         confirmar_senha = request.POST.get('confirmar_senha')
         
-        if not senha or not confirmar_senha:
-            messages.error(request, 'Todos os campos são obrigatórios.')
-        elif senha != confirmar_senha:
+        if senha != confirmar_senha:
             messages.error(request, 'As senhas não coincidem.')
-        elif len(senha) < 8:
-            messages.error(request, 'A senha deve ter pelo menos 8 caracteres.')
         else:
-            # Definir senha
-            subusuario.set_senha(senha)
-            subusuario.convite_enviado = True
-            subusuario.save()
-            
-            messages.success(
-                request, 
-                'Senha definida com sucesso! Você já pode fazer login no sistema.'
-            )
-            return redirect('login')
+            try:
+                validate_password(senha)
+                definir_senha_subusuario(subusuario, senha, token)
+                messages.success(request, 'Senha definida com sucesso! Você já pode fazer login.')
+                return redirect('login')
+            except ValidationError as e:
+                messages.error(request, ' '.join(e.messages))
     
     context = {
         'subusuario': subusuario,
@@ -456,29 +234,35 @@ def definir_senha(request, token):
 
 
 @login_required
+def enviar_convite(request, subusuario_id):
+    """Envia convite para subusuário"""
+    subusuario = get_object_or_404(
+        SubUsuario, 
+        id=subusuario_id, 
+        usuario_principal=request.user
+    )
+    
+    if enviar_convite_subusuario(subusuario, request):
+        messages.success(
+            request, 
+            f'Convite enviado para {subusuario.email} com sucesso!'
+        )
+    else:
+        messages.error(
+            request, 
+            f'Erro ao enviar convite para {subusuario.email}. Tente novamente.'
+        )
+    
+    return redirect('configuracoes:subusuarios:listar_subusuarios')
+
+
+@login_required
 def reenviar_convite(request, subusuario_id):
     """Reenvia convite para subusuário"""
     return enviar_convite(request, subusuario_id)
 
 
 # ===== AJAX ENDPOINTS =====
-
-@login_required
-def ajax_modulos_perfil(request, perfil_id):
-    """Retorna módulos de um perfil de acesso via AJAX"""
-    try:
-        perfil = PerfilAcesso.objects.get(id=perfil_id, ativo=True)
-        modulos = list(perfil.modulos.values_list('id', flat=True))
-        return JsonResponse({
-            'success': True,
-            'modulos': modulos
-        })
-    except PerfilAcesso.DoesNotExist:
-        return JsonResponse({
-            'success': False,
-            'error': 'Perfil não encontrado'
-        })
-
 
 @login_required
 def ajax_validar_login(request):
@@ -500,15 +284,12 @@ def ajax_validar_login(request):
     
     disponivel = not queryset.exists()
     
-    return JsonResponse({
-        'disponivel': disponivel,
-        'message': 'Login disponível' if disponivel else 'Login já está em uso'
-    })
+    return JsonResponse({'disponivel': disponivel})
 
 
 @login_required
 def ajax_validar_email(request):
-    """Valida se e-mail já existe via AJAX"""
+    """Valida se email já existe via AJAX"""
     email = request.GET.get('email', '').strip()
     subusuario_id = request.GET.get('subusuario_id')
     
@@ -526,8 +307,27 @@ def ajax_validar_email(request):
     
     disponivel = not queryset.exists()
     
-    return JsonResponse({
-        'disponivel': disponivel,
-        'message': 'E-mail disponível' if disponivel else 'E-mail já está em uso'
-    })
+    return JsonResponse({'disponivel': disponivel})
+
+
+# ===== DECORATORS E UTILITÁRIOS =====
+
+def require_module_access(module_slug):
+    """Decorator para verificar acesso a módulo específico"""
+    def decorator(view_func):
+        def wrapper(request, *args, **kwargs):
+            # Verificar se o usuário tem acesso ao módulo
+            # Implementar lógica de verificação aqui
+            return view_func(request, *args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def get_user_modules(user):
+    """Retorna módulos acessíveis pelo usuário"""
+    if hasattr(user, 'subusuario'):
+        return user.subusuario.get_modulos_ativos()
+    else:
+        # Usuário principal tem acesso a todos os módulos
+        return ModuloAcesso.objects.filter(ativo=True)
 
