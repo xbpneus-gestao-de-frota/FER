@@ -36,7 +36,7 @@ class SubUsuarioForm(forms.ModelForm):
     )
     
     modulos = forms.ModelMultipleChoiceField(
-        queryset=ModuloAcesso.objects.filter(ativo=True).order_by('id'),
+        queryset=ModuloAcesso.objects.none(),
         widget=forms.CheckboxSelectMultiple,
         required=True,
         label="Selecione as Áreas de Acesso"
@@ -44,7 +44,7 @@ class SubUsuarioForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Sempre mostra TODOS os módulos ativos!
+        # Preenche o queryset corretamente apenas após inicializar
         self.fields['modulos'].queryset = ModuloAcesso.objects.filter(ativo=True).order_by('id')
     
     class Meta:
