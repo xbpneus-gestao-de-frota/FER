@@ -5,6 +5,10 @@ from django.core.exceptions import ValidationError
 
 
 class SubUsuarioForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.usuario_principal = kwargs.pop('usuario_principal', None)
+        super().__init__(*args, **kwargs)
+    
     senha = forms.CharField(
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
@@ -100,6 +104,10 @@ class SubUsuarioForm(forms.ModelForm):
 
     def save(self, commit=True):
         instance = super().save(commit=False)
+        
+        # Definir o usuário principal
+        if self.usuario_principal:
+            instance.usuario_principal = self.usuario_principal
         
         # Se tem senha, criptografar
         if self.cleaned_data.get('senha'):
