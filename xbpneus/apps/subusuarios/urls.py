@@ -18,7 +18,6 @@ urlpatterns = [
     path('<int:subusuario_id>/excluir/', views.excluir_subusuario, name='excluir_subusuario'),
     
     # Alternar status (AJAX)
-    path('<int:subusuario_id>/toggle-ativo/', views.toggle_ativo_subusuario, name='toggle_ativo_subusuario'),
     
     # === FLUXO DE CONVITE ===
     # Enviar convite por e-mail
