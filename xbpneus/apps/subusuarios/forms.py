@@ -106,13 +106,9 @@ class SubUsuarioForm(forms.ModelForm):
     def save(self, commit=True):
         instance = super().save(commit=False)
         
-        # Definir o usuário principal
-        if self.usuario_principal:
-            instance.usuario_principal = self.usuario_principal
-        
         # Se tem senha, criptografar
         if self.cleaned_data.get('senha'):
-            instance.password = make_password(self.cleaned_data['senha'])
+            instance.set_senha(self.cleaned_data['senha'])
         
         if commit:
             instance.save()
