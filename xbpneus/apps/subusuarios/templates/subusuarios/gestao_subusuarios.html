@@ -1,0 +1,439 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestão de Subusuários - XBPNEUS{% endblock %}
+
+{% block extra_css %}
+<style>
+.card-subusuario {
+    transition: all 0.3s ease;
+    border-left: 4px solid #007bff;
+}
+.card-subusuario:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.card-subusuario.inativo {
+    border-left-color: #dc3545;
+    opacity: 0.7;
+}
+.badge-pilar {
+    margin: 2px;
+    font-size: 0.75em;
+}
+.status-ativo {
+    color: #28a745;
+}
+.status-inativo {
+    color: #dc3545;
+}
+.btn-action {
+    margin: 2px;
+    padding: 4px 8px;
+    font-size: 0.8em;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header da Página -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="bi bi-people-fill text-primary"></i>
+                        Gestão de Subusuários
+                    </h2>
+                    <p class="text-muted mb-0">Gerencie os usuários da sua empresa e suas permissões</p>
+                </div>
+                <div>
+                    <a href="{% url 'subusuarios:cadastrar_subusuario' %}" class="btn btn-primary">
+                        <i class="bi bi-person-plus"></i>
+                        Novo Subusuário
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros e Busca -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" class="form-control" id="buscarUsuario" placeholder="Buscar por nome, email ou função...">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="filtroStatus">
+                <option value="">Todos os status</option>
+                <option value="ativo">Apenas ativos</option>
+                <option value="inativo">Apenas inativos</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="filtroPilar">
+                <option value="">Todos os pilares</option>
+                {% for modulo in modulos %}
+                <option value="{{ modulo.slug }}">{{ modulo.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- Estatísticas Rápidas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3 class="mb-1">{{ total_usuarios }}</h3>
+                    <small>Total de Usuários</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3 class="mb-1">{{ usuarios_ativos }}</h3>
+                    <small>Usuários Ativos</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h3 class="mb-1">{{ usuarios_inativos }}</h3>
+                    <small>Usuários Inativos</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3 class="mb-1">{{ total_modulos }}</h3>
+                    <small>Pilares Disponíveis</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Subusuários -->
+    <div class="row" id="listaUsuarios">
+        {% for subusuario in subusuarios %}
+        <div class="col-lg-6 col-xl-4 mb-3 usuario-card" 
+             data-status="{% if subusuario.ativo %}ativo{% else %}inativo{% endif %}"
+             data-pilares="{% for modulo in subusuario.modulos.all %}{{ modulo.slug }} {% endfor %}">
+            
+            <div class="card card-subusuario {% if not subusuario.ativo %}inativo{% endif %}">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-circle me-2">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">{{ subusuario.nome }}</h6>
+                            <small class="text-muted">{{ subusuario.funcao }}</small>
+                        </div>
+                    </div>
+                    <div>
+                        {% if subusuario.ativo %}
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle"></i> Ativo
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger">
+                                <i class="bi bi-x-circle"></i> Inativo
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Informações do Usuário -->
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-1">
+                            <i class="bi bi-envelope text-muted me-2"></i>
+                            <small>{{ subusuario.email }}</small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-person-badge text-muted me-2"></i>
+                            <small>{{ subusuario.login }}</small>
+                        </div>
+                    </div>
+
+                    <!-- Pilares de Acesso -->
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">Pilares de Acesso:</small>
+                        <div>
+                            {% for modulo in subusuario.modulos.all %}
+                                <span class="badge badge-pilar bg-light text-dark border">
+                                    <i class="{{ modulo.icone }}"></i>
+                                    {{ modulo.nome }}
+                                </span>
+                            {% empty %}
+                                <span class="text-muted">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    Nenhum pilar atribuído
+                                </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Data de Criação -->
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="bi bi-calendar3"></i>
+                            Criado em: {{ subusuario.data_criacao|date:"d/m/Y H:i" }}
+                        </small>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between">
+                        <!-- Botões de Ação -->
+                        <div>
+                            <a href="{% url 'subusuarios:editar_subusuario' subusuario.id %}" 
+                               class="btn btn-outline-primary btn-action">
+                                <i class="bi bi-pencil"></i> Editar
+                            </a>
+                            
+                            {% if subusuario.ativo %}
+                                <button class="btn btn-outline-warning btn-action" 
+                                        onclick="toggleStatus({{ subusuario.id }}, false)">
+                                    <i class="bi bi-pause"></i> Desativar
+                                </button>
+                            {% else %}
+                                <button class="btn btn-outline-success btn-action" 
+                                        onclick="toggleStatus({{ subusuario.id }}, true)">
+                                    <i class="bi bi-play"></i> Ativar
+                                </button>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Menu de Opções -->
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary btn-action dropdown-toggle" 
+                                    type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="resetPassword({{ subusuario.id }})">
+                                        <i class="bi bi-key"></i> Resetar Senha
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="viewPermissions({{ subusuario.id }})">
+                                        <i class="bi bi-shield-check"></i> Ver Permissões
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="#" onclick="deleteUser({{ subusuario.id }})">
+                                        <i class="bi bi-trash"></i> Excluir
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="bi bi-people display-1 text-muted"></i>
+                <h4 class="text-muted mt-3">Nenhum subusuário encontrado</h4>
+                <p class="text-muted">Comece criando o primeiro subusuário da sua empresa</p>
+                <a href="{% url 'subusuarios:cadastrar_subusuario' %}" class="btn btn-primary">
+                    <i class="bi bi-person-plus"></i>
+                    Criar Primeiro Subusuário
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal de Confirmação -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Ação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmAction">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Busca em tempo real
+document.getElementById('buscarUsuario').addEventListener('input', function() {
+    filtrarUsuarios();
+});
+
+// Filtros
+document.getElementById('filtroStatus').addEventListener('change', function() {
+    filtrarUsuarios();
+});
+
+document.getElementById('filtroPilar').addEventListener('change', function() {
+    filtrarUsuarios();
+});
+
+function filtrarUsuarios() {
+    const busca = document.getElementById('buscarUsuario').value.toLowerCase();
+    const status = document.getElementById('filtroStatus').value;
+    const pilar = document.getElementById('filtroPilar').value;
+    
+    const cards = document.querySelectorAll('.usuario-card');
+    
+    cards.forEach(card => {
+        const nome = card.querySelector('h6').textContent.toLowerCase();
+        const email = card.querySelector('.bi-envelope').nextSibling.textContent.toLowerCase();
+        const funcao = card.querySelector('small.text-muted').textContent.toLowerCase();
+        const cardStatus = card.dataset.status;
+        const cardPilares = card.dataset.pilares;
+        
+        let mostrar = true;
+        
+        // Filtro de busca
+        if (busca && !nome.includes(busca) && !email.includes(busca) && !funcao.includes(busca)) {
+            mostrar = false;
+        }
+        
+        // Filtro de status
+        if (status && cardStatus !== status) {
+            mostrar = false;
+        }
+        
+        // Filtro de pilar
+        if (pilar && !cardPilares.includes(pilar)) {
+            mostrar = false;
+        }
+        
+        card.style.display = mostrar ? 'block' : 'none';
+    });
+}
+
+// Função para toggle de status
+function toggleStatus(userId, newStatus) {
+    const action = newStatus ? 'ativar' : 'desativar';
+    const message = `Tem certeza que deseja ${action} este usuário?`;
+    
+    showConfirmModal(message, function() {
+        // Aqui você faria a requisição AJAX para alterar o status
+        fetch(`/subusuarios/${userId}/toggle-status/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({status: newStatus})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload(); // Recarrega a página para atualizar o status
+            } else {
+                alert('Erro ao alterar status do usuário');
+            }
+        });
+    });
+}
+
+// Função para resetar senha
+function resetPassword(userId) {
+    const message = 'Tem certeza que deseja resetar a senha deste usuário?';
+    
+    showConfirmModal(message, function() {
+        fetch(`/subusuarios/${userId}/reset-password/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Nova senha: ${data.new_password}`);
+            } else {
+                alert('Erro ao resetar senha');
+            }
+        });
+    });
+}
+
+// Função para ver permissões
+function viewPermissions(userId) {
+    window.open(`/subusuarios/${userId}/permissions/`, '_blank');
+}
+
+// Função para excluir usuário
+function deleteUser(userId) {
+    const message = 'ATENÇÃO: Esta ação é irreversível. Tem certeza que deseja excluir este usuário?';
+    
+    showConfirmModal(message, function() {
+        fetch(`/subusuarios/${userId}/delete/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Erro ao excluir usuário');
+            }
+        });
+    }, 'btn-danger');
+}
+
+// Função para mostrar modal de confirmação
+function showConfirmModal(message, callback, buttonClass = 'btn-primary') {
+    document.getElementById('confirmMessage').textContent = message;
+    const confirmButton = document.getElementById('confirmAction');
+    confirmButton.className = `btn ${buttonClass}`;
+    
+    confirmButton.onclick = function() {
+        callback();
+        bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
+    };
+    
+    new bootstrap.Modal(document.getElementById('confirmModal')).show();
+}
+
+// Função para obter CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}
+

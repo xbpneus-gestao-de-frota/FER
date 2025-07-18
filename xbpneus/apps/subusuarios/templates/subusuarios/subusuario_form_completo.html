@@ -1,0 +1,521 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{% if form.instance.pk %}Editar Subusuário{% else %}Novo Subusuário{% endif %} - XBPNEUS
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid #007bff;
+}
+.form-section h5 {
+    color: #007bff;
+    margin-bottom: 15px;
+}
+.pilar-checkbox {
+    transition: all 0.3s ease;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+.pilar-checkbox:hover {
+    border-color: #007bff;
+    background-color: #f8f9fa;
+}
+.pilar-checkbox.selected {
+    border-color: #007bff;
+    background-color: #e3f2fd;
+}
+.pilar-icon {
+    font-size: 1.5em;
+    margin-bottom: 8px;
+    color: #007bff;
+}
+.password-strength {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 5px;
+    transition: all 0.3s ease;
+}
+.strength-weak { background-color: #dc3545; }
+.strength-medium { background-color: #ffc107; }
+.strength-strong { background-color: #28a745; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="bi bi-person-plus text-primary"></i>
+                        {% if form.instance.pk %}
+                            Editar Subusuário
+                        {% else %}
+                            Novo Subusuário
+                        {% endif %}
+                    </h2>
+                    <p class="text-muted mb-0">
+                        {% if form.instance.pk %}
+                            Atualize as informações e permissões do usuário
+                        {% else %}
+                            Preencha os dados para criar um novo usuário
+                        {% endif %}
+                    </p>
+                </div>
+                <div>
+                    <a href="{% url 'subusuarios:gestao_subusuarios' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i>
+                        Voltar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" id="formSubusuario">
+        {% csrf_token %}
+        
+        <div class="row">
+            <!-- Coluna Principal -->
+            <div class="col-lg-8">
+                
+                <!-- Seção: Dados Pessoais -->
+                <div class="form-section">
+                    <h5>
+                        <i class="bi bi-person-circle"></i>
+                        Dados Pessoais
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.nome.id_for_label }}" class="form-label fw-bold">
+                                Nome Completo *
+                            </label>
+                            {{ form.nome }}
+                            {% if form.nome.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ form.nome.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label fw-bold">
+                                E-mail *
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ form.email.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.login.id_for_label }}" class="form-label fw-bold">
+                                Login de Acesso *
+                            </label>
+                            {{ form.login }}
+                            <div class="form-text">
+                                Será usado para fazer login no sistema
+                            </div>
+                            {% if form.login.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ form.login.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.funcao.id_for_label }}" class="form-label fw-bold">
+                                Função/Cargo
+                            </label>
+                            {{ form.funcao }}
+                            <div class="form-text">
+                                Ex: Técnico de Manutenção, Analista de Estoque
+                            </div>
+                            {% if form.funcao.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ form.funcao.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção: Senha -->
+                {% if not form.instance.pk %}
+                <div class="form-section">
+                    <h5>
+                        <i class="bi bi-shield-lock"></i>
+                        Configuração de Senha
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.senha.id_for_label }}" class="form-label fw-bold">
+                                Senha *
+                            </label>
+                            {{ form.senha }}
+                            <div class="password-strength" id="passwordStrength"></div>
+                            <div class="form-text" id="passwordHelp">
+                                Mínimo 8 caracteres, com letras e números
+                            </div>
+                            {% if form.senha.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ form.senha.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.confirmar_senha.id_for_label }}" class="form-label fw-bold">
+                                Confirmar Senha *
+                            </label>
+                            {{ form.confirmar_senha }}
+                            <div class="form-text" id="passwordMatch">
+                                Digite a senha novamente para confirmar
+                            </div>
+                            {% if form.confirmar_senha.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ form.confirmar_senha.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Seção: Áreas de Acesso -->
+                <div class="form-section">
+                    <h5>
+                        <i class="bi bi-grid-3x3-gap"></i>
+                        Quais áreas este usuário poderá acessar?
+                    </h5>
+                    <p class="text-muted mb-3">
+                        Marque abaixo as áreas do sistema XBPNEUS que este usuário poderá acessar. 
+                        Cada área representa uma função específica do sistema.
+                    </p>
+                    
+                    <!-- Botões de Seleção Rápida -->
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-outline-primary btn-sm me-2" onclick="selecionarTodosModulos()">
+                            <i class="bi bi-check-all"></i> Selecionar Todos
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="desmarcarTodosModulos()">
+                            <i class="bi bi-x-lg"></i> Desmarcar Todos
+                        </button>
+                    </div>
+                    
+                    <!-- Grid de Módulos -->
+                    <div class="row g-3">
+                        {% for checkbox in form.modulos %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="pilar-checkbox" onclick="togglePilar(this)">
+                                    <div class="text-center">
+                                        <div class="pilar-icon">
+                                            <i class="bi bi-grid-3x3-gap"></i>
+                                        </div>
+                                        <div class="form-check">
+                                            {{ checkbox.tag }}
+                                            <label class="form-check-label fw-bold" for="{{ checkbox.choice_value }}">
+                                                {{ checkbox.choice_label }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if form.modulos.errors %}
+                        <div class="text-danger mt-3 fw-bold">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Selecione pelo menos uma área para liberar o acesso.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                
+                <!-- Seção: Status -->
+                <div class="form-section">
+                    <h5>
+                        <i class="bi bi-toggle-on"></i>
+                        Status do Usuário
+                    </h5>
+                    
+                    <div class="form-check form-switch">
+                        {{ form.ativo }}
+                        <label class="form-check-label fw-bold" for="{{ form.ativo.id_for_label }}">
+                            Usuário Ativo
+                        </label>
+                        <div class="form-text">
+                            Usuários inativos não conseguem fazer login no sistema
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção: Resumo -->
+                <div class="form-section">
+                    <h5>
+                        <i class="bi bi-info-circle"></i>
+                        Resumo
+                    </h5>
+                    
+                    <div class="mb-2">
+                        <strong>Áreas selecionadas:</strong>
+                        <span id="contadorModulos" class="badge bg-primary">0</span>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <strong>Status:</strong>
+                        <span id="statusUsuario" class="badge bg-success">Ativo</span>
+                    </div>
+                    
+                    {% if form.instance.pk %}
+                    <div class="mb-2">
+                        <strong>Criado em:</strong>
+                        <small class="text-muted">{{ form.instance.data_criacao|date:"d/m/Y H:i" }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Seção: Ações -->
+                <div class="form-section">
+                    <h5>
+                        <i class="bi bi-gear"></i>
+                        Ações
+                    </h5>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i>
+                            {% if form.instance.pk %}
+                                Atualizar Usuário
+                            {% else %}
+                                Criar Usuário
+                            {% endif %}
+                        </button>
+                        
+                        <a href="{% url 'subusuarios:gestao_subusuarios' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-lg"></i>
+                            Cancelar
+                        </a>
+                        
+                        {% if form.instance.pk %}
+                        <hr>
+                        <button type="button" class="btn btn-outline-warning btn-sm" onclick="resetarSenha()">
+                            <i class="bi bi-key"></i>
+                            Resetar Senha
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Função para toggle de pilar
+function togglePilar(element) {
+    const checkbox = element.querySelector('input[type="checkbox"]');
+    checkbox.checked = !checkbox.checked;
+    
+    if (checkbox.checked) {
+        element.classList.add('selected');
+    } else {
+        element.classList.remove('selected');
+    }
+    
+    atualizarContadores();
+}
+
+// Função para selecionar todos os módulos
+function selecionarTodosModulos() {
+    document.querySelectorAll('input[name="modulos"]').forEach(function(cb) {
+        cb.checked = true;
+        cb.closest('.pilar-checkbox').classList.add('selected');
+    });
+    atualizarContadores();
+}
+
+// Função para desmarcar todos os módulos
+function desmarcarTodosModulos() {
+    document.querySelectorAll('input[name="modulos"]').forEach(function(cb) {
+        cb.checked = false;
+        cb.closest('.pilar-checkbox').classList.remove('selected');
+    });
+    atualizarContadores();
+}
+
+// Atualizar contadores e status
+function atualizarContadores() {
+    const modulosSelecionados = document.querySelectorAll('input[name="modulos"]:checked').length;
+    document.getElementById('contadorModulos').textContent = modulosSelecionados;
+    
+    const usuarioAtivo = document.getElementById('{{ form.ativo.id_for_label }}').checked;
+    const statusBadge = document.getElementById('statusUsuario');
+    
+    if (usuarioAtivo) {
+        statusBadge.textContent = 'Ativo';
+        statusBadge.className = 'badge bg-success';
+    } else {
+        statusBadge.textContent = 'Inativo';
+        statusBadge.className = 'badge bg-danger';
+    }
+}
+
+// Verificação de força da senha
+function verificarForcaSenha() {
+    const senha = document.getElementById('{{ form.senha.id_for_label }}').value;
+    const strengthBar = document.getElementById('passwordStrength');
+    const helpText = document.getElementById('passwordHelp');
+    
+    let score = 0;
+    
+    if (senha.length >= 8) score++;
+    if (/[a-z]/.test(senha)) score++;
+    if (/[A-Z]/.test(senha)) score++;
+    if (/[0-9]/.test(senha)) score++;
+    if (/[^A-Za-z0-9]/.test(senha)) score++;
+    
+    strengthBar.style.width = (score * 20) + '%';
+    
+    if (score < 2) {
+        strengthBar.className = 'password-strength strength-weak';
+        helpText.textContent = 'Senha muito fraca';
+        helpText.className = 'form-text text-danger';
+    } else if (score < 4) {
+        strengthBar.className = 'password-strength strength-medium';
+        helpText.textContent = 'Senha média';
+        helpText.className = 'form-text text-warning';
+    } else {
+        strengthBar.className = 'password-strength strength-strong';
+        helpText.textContent = 'Senha forte';
+        helpText.className = 'form-text text-success';
+    }
+}
+
+// Verificação de confirmação de senha
+function verificarConfirmacaoSenha() {
+    const senha = document.getElementById('{{ form.senha.id_for_label }}').value;
+    const confirmacao = document.getElementById('{{ form.confirmar_senha.id_for_label }}').value;
+    const matchText = document.getElementById('passwordMatch');
+    
+    if (confirmacao === '') {
+        matchText.textContent = 'Digite a senha novamente para confirmar';
+        matchText.className = 'form-text';
+    } else if (senha === confirmacao) {
+        matchText.textContent = 'Senhas coincidem';
+        matchText.className = 'form-text text-success';
+    } else {
+        matchText.textContent = 'Senhas não coincidem';
+        matchText.className = 'form-text text-danger';
+    }
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar contadores
+    atualizarContadores();
+    
+    // Marcar pilares já selecionados
+    document.querySelectorAll('input[name="modulos"]:checked').forEach(function(cb) {
+        cb.closest('.pilar-checkbox').classList.add('selected');
+    });
+    
+    // Event listeners para senha
+    {% if not form.instance.pk %}
+    const senhaField = document.getElementById('{{ form.senha.id_for_label }}');
+    const confirmacaoField = document.getElementById('{{ form.confirmar_senha.id_for_label }}');
+    
+    if (senhaField) {
+        senhaField.addEventListener('input', verificarForcaSenha);
+    }
+    
+    if (confirmacaoField) {
+        confirmacaoField.addEventListener('input', verificarConfirmacaoSenha);
+    }
+    {% endif %}
+    
+    // Event listener para status
+    document.getElementById('{{ form.ativo.id_for_label }}').addEventListener('change', atualizarContadores);
+    
+    // Event listeners para checkboxes de módulos
+    document.querySelectorAll('input[name="modulos"]').forEach(function(cb) {
+        cb.addEventListener('change', atualizarContadores);
+    });
+});
+
+// Função para resetar senha (apenas para edição)
+{% if form.instance.pk %}
+function resetarSenha() {
+    if (confirm('Tem certeza que deseja resetar a senha deste usuário?')) {
+        fetch(`/subusuarios/{{ form.instance.pk }}/reset-password/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Nova senha gerada: ${data.new_password}\n\nAnote esta senha e repasse ao usuário.`);
+            } else {
+                alert('Erro ao resetar senha');
+            }
+        });
+    }
+}
+{% endif %}
+
+// Validação do formulário antes do envio
+document.getElementById('formSubusuario').addEventListener('submit', function(e) {
+    const modulosSelecionados = document.querySelectorAll('input[name="modulos"]:checked').length;
+    
+    if (modulosSelecionados === 0) {
+        e.preventDefault();
+        alert('Selecione pelo menos uma área de acesso para o usuário.');
+        return false;
+    }
+    
+    {% if not form.instance.pk %}
+    const senha = document.getElementById('{{ form.senha.id_for_label }}').value;
+    const confirmacao = document.getElementById('{{ form.confirmar_senha.id_for_label }}').value;
+    
+    if (senha !== confirmacao) {
+        e.preventDefault();
+        alert('As senhas não coincidem. Verifique e tente novamente.');
+        return false;
+    }
+    
+    if (senha.length < 8) {
+        e.preventDefault();
+        alert('A senha deve ter pelo menos 8 caracteres.');
+        return false;
+    }
+    {% endif %}
+});
+</script>
+{% endblock %}
+
