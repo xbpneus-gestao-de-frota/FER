@@ -56,9 +56,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'xbpneus.config.wsgi.application'
 
-# Database
+import os
+
 DATABASES = {
-    'default': dj_database_url.parse(os.getenv('DATABASE_URL'))
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('PGDATABASE'),
+        'USER': os.getenv('PGUSER'),
+        'PASSWORD': os.getenv('PGPASSWORD'),
+        'HOST': os.getenv('PGHOST'),
+        'PORT': os.getenv('PGPORT'),
+    }
 }
 
 # Password validation
