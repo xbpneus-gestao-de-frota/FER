@@ -1,2 +1,2 @@
-# Management commands for subusuarios app
+# Management commands package
 
