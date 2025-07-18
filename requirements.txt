@@ -8,3 +8,4 @@ psycopg2-binary>=2.9.7
 django-extensions>=3.2.3
 django-debug-toolbar>=4.2.0
 
+dj-database-url==2.1.0

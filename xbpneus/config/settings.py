@@ -1,18 +1,15 @@
-"""
-Django settings for XBPNEUS Premium project.
-"""
-
 import os
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xbpneus-premium-2024-change-in-production'
+SECRET_KEY = 'django-insecure-your-secret-key-here'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -24,16 +21,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # XBPNEUS Apps
-    'xbpneus.apps.home',
-    'xbpneus.apps.produtos',
-    'xbpneus.apps.servicos',
-    'xbpneus.apps.contato',
-    'xbpneus.apps.frota',
-    'xbpneus.apps.subusuarios',
     'xbpneus.apps.configuracoes',
-    'xbpneus.core',
+    'xbpneus.apps.subusuarios',
+    'xbpneus.apps.frota',
 ]
 
 MIDDLEWARE = [
@@ -51,7 +41,7 @@ ROOT_URLCONF = 'xbpneus.config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'xbpneus' / 'templates'],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -67,17 +57,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'xbpneus.config.wsgi.application'
 
 # Database
-import os
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('PGDATABASE'),
-        'USER': os.getenv('PGUSER'),
-        'PASSWORD': os.getenv('PGPASSWORD'),
-        'HOST': os.getenv('PGHOST'),
-        'PORT': os.getenv('PGPORT'),
-    }
+    'default': dj_database_url.parse(os.getenv('DATABASE_URL'))
 }
 
 # Password validation
@@ -106,66 +87,21 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
-    BASE_DIR / 'xbpneus' / 'static',
+    BASE_DIR / 'static',
 ]
 
 # Media files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'xbpneus' / 'media'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# XBPNEUS Specific Settings
-SITE_NAME = 'XBPNEUS Premium'
-SITE_DESCRIPTION = 'Sistema Premium de Gestão de Pneus'
-COMPANY_NAME = 'XBPNEUS'
-
-
-# Login/Logout Settings
-LOGIN_URL = '/login/'
+# Login URLs
+LOGIN_URL = '/painel/login/'
 LOGIN_REDIRECT_URL = '/painel/'
-LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/painel/login/'
 
+# Email settings (configure as needed)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# CSRF Settings
-CSRF_TRUSTED_ORIGINS = [
-    'https://fer-production.up.railway.app',
-    'https://courteous-gentleness-fer.up.railway.app',
-    'https://app.xbpneus.com',
-    'https://xbpneus.com',
-    'https://www.xbpneus.com',
-    'https://8000-i0i0iiifkw45t3ueqdifg-3c1b4d25.manusvm.computer',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-]
-
-
-
-# Email Settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'noreply@xbpneus.com')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = 'XBPNEUS Sistema <noreply@xbpneus.com>'
-SERVER_EMAIL = DEFAULT_FROM_EMAIL
-
-# Para desenvolvimento, usar console backend se não houver configuração de e-mail
-if not EMAIL_HOST_PASSWORD and DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-
-import os
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('PGDATABASE'),
-        'USER': os.getenv('PGUSER'),
-        'PASSWORD': os.getenv('PGPASSWORD'),
-        'HOST': os.getenv('PGHOST'),
-        'PORT': os.getenv('PGPORT'),
-    }
-}
