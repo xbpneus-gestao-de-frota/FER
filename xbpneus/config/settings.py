@@ -69,10 +69,6 @@ WSGI_APPLICATION = 'xbpneus.config.wsgi.application'
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -150,3 +146,16 @@ SERVER_EMAIL = DEFAULT_FROM_EMAIL
 if not EMAIL_HOST_PASSWORD and DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+
+import os
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('PGDATABASE'),
+        'USER': os.getenv('PGUSER'),
+        'PASSWORD': os.getenv('PGPASSWORD'),
+        'HOST': os.getenv('PGHOST'),
+        'PORT': os.getenv('PGPORT'),
+    }
+}
