@@ -48,10 +48,10 @@ urlpatterns = [
     path('area-do-cliente/', area_cliente_redirect, name='area_do_cliente_redirect'),
     path('health/', health_check, name='health_check'),
     
-    # Apps do sistema
-    path('produtos/', include('xbpneus.apps.produtos.urls')),
-    path('servicos/', include('xbpneus.apps.servicos.urls')),
-    path('contato/', include('xbpneus.apps.contato.urls')),
+    # Apps do sistema - Comentados até serem implementados
+    # path('produtos/', include('xbpneus.apps.produtos.urls')),
+    # path('servicos/', include('xbpneus.apps.servicos.urls')),
+    # path('contato/', include('xbpneus.apps.contato.urls')),
     
     # Página inicial - deve ser a última
     path('', root_redirect, name='root_redirect'),
