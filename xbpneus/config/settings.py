@@ -62,6 +62,35 @@ DATABASES = {
     'default': dj_database_url.config(default=os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite3'))
 }
 
+# Railway specific configurations
+if os.environ.get('RAILWAY_ENVIRONMENT'):
+    # Configurações específicas para Railway
+    ALLOWED_HOSTS = ['*']
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = False  # Railway já gerencia HTTPS
+    
+    # Logging para Railway
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+            },
+        },
+        'root': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['console'],
+                'level': 'INFO',
+                'propagate': False,
+            },
+        },
+    }
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
